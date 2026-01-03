@@ -77,14 +77,17 @@ export default function AdminComplaintDetailPage() {
         }
     };
 
-    if (loading) return <div className="p-12 text-center text-gray-500 font-bold">Retrieving Record...</div>;
-    if (!complaint) return <div className="p-12 text-center text-red-600 font-bold">Record Not Found</div>;
+    if (loading) return <div className="min-h-screen bg-gray-100 pt-40 flex justify-center"><div className="text-xl font-bold text-[#003366] uppercase tracking-wide">Retrieving Record...</div></div>;
+    if (!complaint) return <div className="min-h-screen bg-gray-100 pt-40 flex justify-center"><div className="text-xl font-bold text-red-600 uppercase tracking-wide">Record Not Found</div></div>;
 
     const timelineReversed = complaint.timeline ? [...complaint.timeline].reverse() : [];
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
-            <div className="max-w-6xl mx-auto px-6 py-8">
+            {/* HEADER OFFSET */}
+            <div className="h-36"></div>
+
+            <div className="max-w-6xl mx-auto px-6 pb-16">
                 <div className="mb-6 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link href="/admin/complaints" className="text-gray-500 hover:text-[#003366] font-semibold text-sm">
