@@ -12,6 +12,8 @@ import {
     getAdminAnalytics,
     assignComplaint,
     updateComplaintStatus,
+    getAdminByDepartment,
+    downloadAdminExport,
     type Grievance,
     type AdminAnalytics,
     type AdminComplaintFilters,
@@ -27,6 +29,7 @@ export default function AdminDashboardPage() {
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [showStatusModal, setShowStatusModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
+    const [deptCounts, setDeptCounts] = useState<Record<string, number>>({});
 
     const LocationMap = dynamic(() => import('@/components/LocationMap'), { ssr: false });
 
@@ -58,12 +61,14 @@ export default function AdminDashboardPage() {
 
     const loadData = async () => {
         try {
-            const [complaintsData, analyticsData] = await Promise.all([
+            const [complaintsData, analyticsData, deptData] = await Promise.all([
                 getAdminComplaints(filters),
-                getAdminAnalytics()
+                getAdminAnalytics(),
+                getAdminByDepartment()
             ]);
             setComplaints(complaintsData);
             setAnalytics(analyticsData);
+            setDeptCounts(deptData);
         } catch (error) {
             console.error('Failed to load data:', error);
         }
@@ -204,6 +209,39 @@ export default function AdminDashboardPage() {
                         </div>
                     </div>
                 )}
+
+                {/* Charts Section */}
+                <div className="gov-card mb-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="font-bold text-[#003366]">📊 Complaints by Department</h3>
+                        <button onClick={downloadAdminExport} className="btn-primary text-sm flex items-center gap-2">
+                            📥 Export CSV
+                        </button>
+                    </div>
+
+                    <div className="h-48 flex items-end gap-2 border-b border-gray-300 pb-2">
+                        {Object.entries(deptCounts).length > 0 ? (
+                            Object.entries(deptCounts).map(([dept, count]) => {
+                                const max = Math.max(...Object.values(deptCounts)) || 1;
+                                const height = Math.max((count / max) * 100, 5); // min 5%
+                                return (
+                                    <div key={dept} className="flex-1 flex flex-col items-center justify-end group">
+                                        <div className="text-xs font-bold mb-1 opacity-0 group-hover:opacity-100 transition-opacity">{count}</div>
+                                        <div
+                                            className="w-full bg-[#003366] rounded-t hover:bg-[#002244] transition-all"
+                                            style={{ height: `${height}%` }}
+                                        />
+                                        <div className="text-[10px] mt-2 text-center truncate w-full h-8 leading-tight text-gray-600">
+                                            {dept}
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <p className="w-full text-center text-gray-500 self-center">No data available for charts</p>
+                        )}
+                    </div>
+                </div>
 
                 {/* Filters */}
                 <div className="gov-card mb-4">

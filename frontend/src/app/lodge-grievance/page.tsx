@@ -87,10 +87,23 @@ export default function LodgeGrievance() {
             setAudioName(file.name);
             setLoading(true);
             try {
+                // Get duration
+                const getDuration = (f: File): Promise<number> => new Promise(resolve => {
+                    const audio = new Audio();
+                    audio.preload = 'metadata';
+                    audio.onloadedmetadata = () => {
+                        URL.revokeObjectURL(audio.src);
+                        resolve(audio.duration);
+                    };
+                    audio.src = URL.createObjectURL(f);
+                });
+
+                const duration = await getDuration(file);
                 const result = await uploadMedia(file);
+
                 if (result.success) {
                     setAudioPath(result.path);
-                    setAudioMeta(result.metadata);
+                    setAudioMeta({ ...result.metadata, duration });
                 }
             } catch (err) {
                 console.error(err);
@@ -114,10 +127,23 @@ export default function LodgeGrievance() {
                 setAudioName('voice_recording.webm');
                 setLoading(true);
                 try {
+                    // Get duration
+                    const getDuration = (f: File): Promise<number> => new Promise(resolve => {
+                        const audio = new Audio();
+                        audio.preload = 'metadata';
+                        audio.onloadedmetadata = () => {
+                            URL.revokeObjectURL(audio.src);
+                            resolve(audio.duration);
+                        };
+                        audio.src = URL.createObjectURL(f);
+                    });
+
+                    const duration = await getDuration(file);
                     const result = await uploadMedia(file);
+
                     if (result.success) {
                         setAudioPath(result.path);
-                        setAudioMeta(result.metadata);
+                        setAudioMeta({ ...result.metadata, duration });
                     }
                 } catch (err) {
                     console.error(err);

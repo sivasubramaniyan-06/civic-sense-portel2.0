@@ -451,3 +451,40 @@ export async function getUserComplaintDetail(complaintId: string): Promise<{ suc
   return response.json();
 }
 
+// Admin Analytics Extensions
+export async function getAdminAnalyticsSummary(): Promise<any> {
+  const token = getStoredToken();
+  const response = await fetch(`${API_BASE_URL}/api/admin/analytics/summary`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return response.json();
+}
+
+export async function getAdminByDepartment(): Promise<Record<string, number>> {
+  const token = getStoredToken();
+  const response = await fetch(`${API_BASE_URL}/api/admin/analytics/by-department`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return response.json();
+}
+
+export async function downloadAdminExport(): Promise<void> {
+  const token = getStoredToken();
+  const response = await fetch(`${API_BASE_URL}/api/admin/analytics/export`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (!response.ok) throw new Error('Export failed');
+
+  // Trigger download
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `complaints_export_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+}
+
