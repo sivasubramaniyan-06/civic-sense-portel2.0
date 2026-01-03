@@ -211,10 +211,10 @@ body {
 
 /* Page content padding for internal pages */
 .page-content {
-  padding-top: 140px !important;
-  padding-bottom: 2rem;
+  padding-top: 160px !important;
+  padding-bottom: 3rem;
   min-height: 100vh;
-  background-color: #f9fafb;
+  background-color: #f5f7fa;
   width: 100%;
   box-sizing: border-box;
 }
@@ -222,9 +222,11 @@ body {
 /* Center child container */
 .page-content>div {
   width: 100%;
-  max-width: 100%;
+  max-width: 1200px;
   margin-left: auto !important;
   margin-right: auto !important;
+  padding-left: 2rem;
+  padding-right: 2rem;
   box-sizing: border-box;
 }
 
@@ -234,6 +236,8 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
 /* ===== HERO SLIDER ===== */

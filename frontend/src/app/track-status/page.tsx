@@ -58,17 +58,22 @@ export default function TrackStatus() {
     const currentStepIndex = grievance ? statusSteps.indexOf(grievance.status) : -1;
 
     return (
-        <div className="page-content">
-            <div className="w-full max-w-3xl mx-auto px-4">
-                <h1 className="text-2xl font-bold text-center text-[#003366] mb-2">
-                    Track Your Grievance
-                </h1>
-                <p className="text-center text-gray-600 mb-8">
-                    Enter your Complaint ID to check the status of your grievance
-                </p>
+        <div className="min-h-screen bg-gray-50">
+            {/* Header offset */}
+            <div className="h-32"></div>
+
+            <div className="max-w-[900px] mx-auto px-8 pb-16">
+                <header className="text-center mb-10">
+                    <h1 className="text-3xl font-bold text-[#003366] mb-3">
+                        Track Your Grievance
+                    </h1>
+                    <p className="text-lg text-gray-600">
+                        Enter your Complaint ID to check the status of your grievance
+                    </p>
+                </header>
 
                 {/* Search Box */}
-                <div className="gov-card mb-8">
+                <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 mb-8">
                     <div className="flex gap-4">
                         <input
                             type="text"

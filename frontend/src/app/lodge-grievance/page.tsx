@@ -164,14 +164,17 @@ export default function LodgeGrievance() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 font-sans text-gray-800">
-            <div className="max-w-2xl mx-auto px-6">
+        <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
+            {/* Header offset */}
+            <div className="h-32"></div>
+
+            <div className="max-w-[800px] mx-auto px-8 pb-16">
                 <header className="mb-10 text-center">
-                    <h1 className="text-3xl font-bold text-[#003366] mb-2">Lodge Public Grievance</h1>
-                    <p className="text-gray-600">Step-by-step submission process</p>
+                    <h1 className="text-3xl font-bold text-[#003366] mb-3">Lodge Public Grievance</h1>
+                    <p className="text-lg text-gray-600">Step-by-step submission process</p>
                 </header>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
                     {/* Progress Bar */}
                     <div className="bg-gray-100 flex h-2">
                         <div className={`flex-1 transition-colors ${step >= 1 ? 'bg-[#003366]' : 'bg-gray-200'}`}></div>

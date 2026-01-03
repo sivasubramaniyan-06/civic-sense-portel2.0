@@ -41,16 +41,21 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="page-content flex items-center justify-center">
-            <div className="gov-card w-full max-w-md">
-                <div className="text-center mb-6">
-                    <div className="text-5xl mb-4">🔐</div>
-                    <h1 className="text-xl font-bold text-[#800020]">Citizen Login</h1>
-                    <p className="text-sm text-gray-600">Access your grievance dashboard</p>
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center px-8">
+            {/* Header offset handled by flex centering */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 w-full max-w-md p-10 mt-20">
+                <div className="text-center mb-8">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#003366] flex items-center justify-center">
+                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <h1 className="text-2xl font-bold text-[#003366]">Citizen Login</h1>
+                    <p className="text-base text-gray-600 mt-2">Access your grievance dashboard</p>
                 </div>
 
                 {error && (
-                    <div className="alert alert-error mb-4">
+                    <div className="mb-6 p-4 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm font-medium">
                         {error}
                     </div>
                 )}
