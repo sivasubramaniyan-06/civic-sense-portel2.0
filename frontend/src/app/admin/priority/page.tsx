@@ -65,7 +65,7 @@ export default function PrioritySessionPage() {
     return (
         <div className="min-h-screen bg-gray-100">
             {/* HEADER OFFSET */}
-            <div className="h-24"></div>
+            <div className="h-36"></div>
 
             {/* CENTERED CONTAINER */}
             <div className="max-w-[1280px] mx-auto px-8 pb-20">
@@ -191,8 +191,8 @@ export default function PrioritySessionPage() {
                                                 <Link
                                                     href={`/admin/complaints/${complaint.id}`}
                                                     className={`inline-block px-16 py-5 rounded-lg font-bold uppercase text-xl tracking-wider shadow-lg transition-colors ${wait.isCritical
-                                                            ? 'bg-red-700 text-white hover:bg-red-800'
-                                                            : 'bg-orange-600 text-white hover:bg-orange-700'
+                                                        ? 'bg-red-700 text-white hover:bg-red-800'
+                                                        : 'bg-orange-600 text-white hover:bg-orange-700'
                                                         }`}
                                                 >
                                                     Assign Officer Now

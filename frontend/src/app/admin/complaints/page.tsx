@@ -88,7 +88,7 @@ export default function ManageComplaintsPage() {
     return (
         <div className="min-h-screen bg-gray-100">
             {/* HEADER OFFSET */}
-            <div className="h-24"></div>
+            <div className="h-36"></div>
 
             {/* CENTERED CONTAINER */}
             <div className="max-w-[1280px] mx-auto px-8 pb-20">
@@ -158,8 +158,8 @@ export default function ManageComplaintsPage() {
                                 key={tab.id}
                                 onClick={() => setStatusFilter(tab.id === 'all' ? '' : tab.id)}
                                 className={`flex-1 py-5 text-base font-bold uppercase tracking-wide transition-all ${(tab.id === 'all' && !statusFilter) || statusFilter === tab.id
-                                        ? 'bg-[#003366] text-white'
-                                        : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                    ? 'bg-[#003366] text-white'
+                                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                                     }`}
                             >
                                 {tab.label}

@@ -75,7 +75,7 @@ export default function AdminDashboardPage() {
     return (
         <div className="min-h-screen bg-gray-100">
             {/* HEADER OFFSET - Ensures content starts below fixed header */}
-            <div className="h-24"></div>
+            <div className="h-36"></div>
 
             {/* CENTERED CONTAINER */}
             <div className="max-w-[1280px] mx-auto px-8 pb-20">
@@ -163,16 +163,16 @@ export default function AdminDashboardPage() {
                     </h2>
 
                     <div className={`rounded-lg shadow-lg p-10 ${systemStatus.level === 'critical' ? 'bg-red-50 border-l-8 border-red-700' :
-                            systemStatus.level === 'warning' ? 'bg-orange-50 border-l-8 border-orange-500' :
-                                'bg-green-50 border-l-8 border-green-600'
+                        systemStatus.level === 'warning' ? 'bg-orange-50 border-l-8 border-orange-500' :
+                            'bg-green-50 border-l-8 border-green-600'
                         }`}>
                         <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
                             <div className="text-center lg:text-left flex-1">
                                 <h3 className="text-3xl font-bold uppercase tracking-wide mb-4">
                                     System Status:
                                     <span className={`ml-3 ${systemStatus.level === 'critical' ? 'text-red-700' :
-                                            systemStatus.level === 'warning' ? 'text-orange-700' :
-                                                'text-green-700'
+                                        systemStatus.level === 'warning' ? 'text-orange-700' :
+                                            'text-green-700'
                                         }`}>
                                         {systemStatus.status}
                                     </span>

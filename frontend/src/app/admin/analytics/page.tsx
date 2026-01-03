@@ -57,7 +57,7 @@ export default function AnalyticsPage() {
     return (
         <div className="min-h-screen bg-gray-100">
             {/* HEADER OFFSET */}
-            <div className="h-24"></div>
+            <div className="h-36"></div>
 
             {/* CENTERED CONTAINER */}
             <div className="max-w-[1280px] mx-auto px-8 pb-20">
