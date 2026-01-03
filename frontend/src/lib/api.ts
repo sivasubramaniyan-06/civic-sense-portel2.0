@@ -34,6 +34,10 @@ export interface Grievance {
   image_path: string | null;
   image_data: string | null;  // Base64 image data for preview
   audio_path: string | null;  // Path to voice note
+  link: string | null;  // For generic media
+  audio_meta: { size: number; duration?: number; original_name: string } | null;
+  lat?: number;
+  lng?: number;
   submitter_name: string;
   submitter_phone: string | null;
   submitter_email: string | null;
@@ -55,7 +59,11 @@ export interface GrievanceSubmission {
   description: string;
   location: string;
   image_base64?: string;
-  audio_base64?: string;  // Base64 encoded audio file
+  audio_base64?: string;
+  audio_path?: string;
+  audio_meta?: any;
+  lat?: number;
+  lng?: number;
   submitter_name?: string;
   submitter_phone?: string;
   submitter_email?: string;
@@ -105,6 +113,22 @@ export async function submitGrievance(data: GrievanceSubmission): Promise<Grieva
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.detail || 'Failed to submit grievance');
+  }
+
+  return response.json();
+}
+
+export async function uploadMedia(file: File): Promise<{ success: boolean; path: string; metadata: any }> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(`${API_BASE_URL}/api/media/upload-audio`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error('Upload failed');
   }
 
   return response.json();

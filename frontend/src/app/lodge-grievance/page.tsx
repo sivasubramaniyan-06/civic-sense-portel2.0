@@ -1,8 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { submitGrievance, checkDuplicate, classifyGrievance } from '@/lib/api';
+import dynamic from 'next/dynamic';
+import { submitGrievance, checkDuplicate, classifyGrievance, uploadMedia } from '@/lib/api';
 import type { ClassificationResult, DuplicateCheckResponse, GrievanceResponse } from '@/lib/api';
+
+const LocationMap = dynamic(() => import('@/components/LocationMap'), { ssr: false });
 
 const CATEGORIES = [
     { value: 'road', label: '🛣️ Road-related', description: 'Potholes, street lights, traffic signals, road damage' },
@@ -34,10 +37,17 @@ export default function LodgeGrievance() {
     const [location, setLocation] = useState('');
     const [imageBase64, setImageBase64] = useState('');
     const [imageName, setImageName] = useState('');
+
+    // Media & Location
     const [audioBase64, setAudioBase64] = useState('');
+    const [audioPath, setAudioPath] = useState('');
+    const [audioMeta, setAudioMeta] = useState<any>(null);
     const [audioName, setAudioName] = useState('');
     const [isRecording, setIsRecording] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+    const [lat, setLat] = useState<number | undefined>(undefined);
+    const [lng, setLng] = useState<number | undefined>(undefined);
+
     const [submitterName, setSubmitterName] = useState('');
     const [submitterPhone, setSubmitterPhone] = useState('');
     const [submitterEmail, setSubmitterEmail] = useState('');
@@ -59,7 +69,7 @@ export default function LodgeGrievance() {
         }
     };
 
-    const handleAudioUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             // Validate file size (max 10MB)
@@ -68,17 +78,25 @@ export default function LodgeGrievance() {
                 return;
             }
             // Validate file type
-            const validTypes = ['audio/mp3', 'audio/mpeg', 'audio/wav', 'audio/m4a', 'audio/x-m4a', 'audio/webm'];
+            const validTypes = ['audio/mp3', 'audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/m4a', 'audio/x-m4a', 'audio/webm'];
             if (!validTypes.includes(file.type)) {
                 setError('Please upload MP3, WAV, or M4A audio file');
                 return;
             }
+
             setAudioName(file.name);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setAudioBase64(reader.result as string);
-            };
-            reader.readAsDataURL(file);
+            setLoading(true);
+            try {
+                const result = await uploadMedia(file);
+                if (result.success) {
+                    setAudioPath(result.path);
+                    setAudioMeta(result.metadata);
+                }
+            } catch (err) {
+                console.error(err);
+                setError('Failed to upload audio file');
+            }
+            setLoading(false);
         }
     };
 
@@ -89,14 +107,24 @@ export default function LodgeGrievance() {
             const chunks: Blob[] = [];
 
             recorder.ondataavailable = (e) => chunks.push(e.data);
-            recorder.onstop = () => {
+            recorder.onstop = async () => {
                 const blob = new Blob(chunks, { type: 'audio/webm' });
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    setAudioBase64(reader.result as string);
-                    setAudioName('voice_recording.webm');
-                };
-                reader.readAsDataURL(blob);
+                const file = new File([blob], "voice_recording.webm", { type: "audio/webm" });
+
+                setAudioName('voice_recording.webm');
+                setLoading(true);
+                try {
+                    const result = await uploadMedia(file);
+                    if (result.success) {
+                        setAudioPath(result.path);
+                        setAudioMeta(result.metadata);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    setError('Failed to upload recording');
+                }
+                setLoading(false);
+
                 stream.getTracks().forEach(track => track.stop());
             };
 
@@ -116,8 +144,15 @@ export default function LodgeGrievance() {
         }
     };
 
+    const handleLocationSelect = (selectedLat: number, selectedLng: number) => {
+        setLat(selectedLat);
+        setLng(selectedLng);
+    };
+
     const removeAudio = () => {
         setAudioBase64('');
+        setAudioPath('');
+        setAudioMeta(null);
         setAudioName('');
     };
 
@@ -162,6 +197,11 @@ export default function LodgeGrievance() {
                 description,
                 location,
                 image_base64: imageBase64 || undefined,
+                audio_base64: audioBase64 || undefined,
+                audio_path: audioPath || undefined,
+                audio_meta: audioMeta || undefined,
+                lat: lat || undefined,
+                lng: lng || undefined,
                 submitter_name: submitterName || undefined,
                 submitter_phone: submitterPhone || undefined,
                 submitter_email: submitterEmail || undefined,
@@ -272,6 +312,20 @@ export default function LodgeGrievance() {
                             </select>
                         </div>
 
+                        <div className="form-group mb-6">
+                            <label className="form-label">Pin Exact Location (Optional)</label>
+                            <div className="h-[300px] mb-2">
+                                <LocationMap
+                                    onLocationSelect={handleLocationSelect}
+                                    initialLat={lat || 28.6139}
+                                    initialLng={lng || 77.2090}
+                                />
+                            </div>
+                            {lat && lng && (
+                                <p className="text-sm text-green-600">✓ Location pinned: {lat.toFixed(6)}, {lng.toFixed(6)}</p>
+                            )}
+                        </div>
+
                         <div className="form-group">
                             <label className="form-label">Upload Photo Proof (Optional)</label>
                             <input
@@ -292,6 +346,60 @@ export default function LodgeGrievance() {
                                     )}
                                 </div>
                             )}
+                        </div>
+
+                        <div className="form-group mb-6">
+                            <label className="form-label">Add Voice Note (Optional)</label>
+
+                            {!isRecording && !audioName ? (
+                                <div className="flex gap-4 items-center flex-wrap">
+                                    <button
+                                        onClick={startRecording}
+                                        className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                                    >
+                                        🎤 Start Recording
+                                    </button>
+                                    <span className="text-gray-400">or</span>
+                                    <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                        📁 Upload Audio
+                                        <input
+                                            type="file"
+                                            className="hidden"
+                                            accept="audio/*"
+                                            onChange={handleAudioUpload}
+                                        />
+                                    </label>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                    {isRecording ? (
+                                        <>
+                                            <div className="animate-pulse text-red-600 font-bold flex items-center gap-2">
+                                                🔴 Recording...
+                                            </div>
+                                            <button
+                                                onClick={stopRecording}
+                                                className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                                            >
+                                                Stop
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="flex items-center gap-2 text-green-700">
+                                                🎵 {audioName}
+                                            </div>
+                                            <button
+                                                onClick={removeAudio}
+                                                className="text-red-500 text-sm hover:underline"
+                                            >
+                                                Remove
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            )}
+                            <p className="text-xs text-gray-500 mt-1">Supported formats: MP3, WAV, M4A</p>
                         </div>
 
                         <hr className="my-6" />

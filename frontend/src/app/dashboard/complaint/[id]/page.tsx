@@ -3,7 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { getStoredToken, getUserComplaintDetail, type Grievance } from '@/lib/api';
+
+const LocationMap = dynamic(() => import('@/components/LocationMap'), { ssr: false });
 
 export default function ComplaintDetailPage() {
     const router = useRouter();
@@ -204,6 +207,33 @@ export default function ComplaintDetailPage() {
                             alt="Complaint evidence"
                             className="max-w-full h-auto rounded-lg border max-h-96 object-contain"
                         />
+                    </div>
+                )}
+
+                {/* Audio Evidence */}
+                {complaint.audio_path && (
+                    <div className="gov-card mb-6">
+                        <h2 className="text-lg font-bold text-[#003366] mb-4">🎤 Voice Note</h2>
+                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <audio controls className="w-full">
+                                <source src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/uploads/${complaint.audio_path}`} />
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    </div>
+                )}
+
+                {/* Location Map */}
+                {(complaint.lat || (complaint as any).lat) && (
+                    <div className="gov-card mb-6">
+                        <h2 className="text-lg font-bold text-[#003366] mb-4">📍 Exact Location</h2>
+                        <div className="h-[300px] rounded-lg overflow-hidden border border-gray-200">
+                            <LocationMap
+                                initialLat={(complaint.lat || (complaint as any).lat) as number}
+                                initialLng={(complaint.lng || (complaint as any).lng) as number}
+                                onLocationSelect={() => { }} // Read-only
+                            />
+                        </div>
                     </div>
                 )}
 

@@ -118,9 +118,11 @@ async def submit_grievance(submission: GrievanceSubmission, authorization: Optio
         image_path = f"uploads/{complaint_id}.jpg"
         image_data = submission.image_base64
     
-    # Handle audio - save to file system
-    audio_path = None
-    if submission.audio_base64:
+    # Handle audio - PREFER pre-uploaded path from media API
+    audio_path = submission.audio_path
+    
+    # Fallback to base64 if no path provided (legacy/alternative support)
+    if not audio_path and submission.audio_base64:
         try:
             # Decode base64 and save to file
             import base64
@@ -151,6 +153,9 @@ async def submit_grievance(submission: GrievanceSubmission, authorization: Optio
         submitter_name=submission.submitter_name or "Anonymous",
         submitter_phone=submission.submitter_phone,
         submitter_email=submission.submitter_email,
+        lat=submission.lat,
+        lng=submission.lng,
+        audio_meta=submission.audio_meta,
         user_id=user_id,  # Link to authenticated user
         status=Status.SUBMITTED,
         priority=classification.priority,

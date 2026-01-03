@@ -39,6 +39,10 @@ class GrievanceSubmission(BaseModel):
     submitter_name: Optional[str] = "Anonymous"
     submitter_phone: Optional[str] = None
     submitter_email: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    audio_path: Optional[str] = None  # Direct path if uploaded via media API
+    audio_meta: Optional[dict] = None
 
 
 class ClassificationResult(BaseModel):
@@ -83,6 +87,9 @@ class Grievance(BaseModel):
     submitter_name: str
     submitter_phone: Optional[str] = None
     submitter_email: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    audio_meta: Optional[dict] = None  # {size, duration, original_name}
     user_id: Optional[str] = None  # Link to authenticated user
     status: Status = Status.SUBMITTED
     priority: Priority = Priority.MEDIUM

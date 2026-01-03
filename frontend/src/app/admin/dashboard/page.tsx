@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
     getStoredUser,
     getStoredToken,
@@ -25,6 +26,9 @@ export default function AdminDashboardPage() {
     const [selectedComplaint, setSelectedComplaint] = useState<Grievance | null>(null);
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [showStatusModal, setShowStatusModal] = useState(false);
+    const [showViewModal, setShowViewModal] = useState(false);
+
+    const LocationMap = dynamic(() => import('@/components/LocationMap'), { ssr: false });
 
     // Form states
     const [assignData, setAssignData] = useState({ department: '', officer_name: '', remarks: '' });
@@ -314,6 +318,15 @@ export default function AdminDashboardPage() {
                                             <td>
                                                 <div className="action-buttons">
                                                     <button
+                                                        className="btn-outline text-xs px-2 py-1"
+                                                        onClick={() => {
+                                                            setSelectedComplaint(complaint);
+                                                            setShowViewModal(true);
+                                                        }}
+                                                    >
+                                                        View
+                                                    </button>
+                                                    <button
                                                         className="btn-assign"
                                                         onClick={() => {
                                                             setSelectedComplaint(complaint);
@@ -441,6 +454,58 @@ export default function AdminDashboardPage() {
                             <div className="modal-footer">
                                 <button className="btn-outline" onClick={() => setShowStatusModal(false)}>Cancel</button>
                                 <button className="btn-primary" onClick={handleStatusUpdate}>Update</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* View Details Modal */}
+                {showViewModal && selectedComplaint && (
+                    <div className="modal-overlay" onClick={() => setShowViewModal(false)}>
+                        <div className="modal-content" onClick={e => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h2>Complaint Details</h2>
+                                <button className="modal-close" onClick={() => setShowViewModal(false)}>×</button>
+                            </div>
+                            <div className="modal-body">
+                                <p className="text-sm font-bold text-[#003366] mb-2">Complaint #{selectedComplaint.id}</p>
+                                <p className="text-gray-700 mb-4">{selectedComplaint.description}</p>
+
+                                {selectedComplaint.audio_path && (
+                                    <div className="mb-4">
+                                        <label className="text-sm font-bold block mb-1">Voice Note</label>
+                                        <audio controls className="w-full h-8">
+                                            <source src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/uploads/${selectedComplaint.audio_path}`} />
+                                        </audio>
+                                    </div>
+                                )}
+
+                                {(selectedComplaint.lat || (selectedComplaint as any).lat) && (
+                                    <div className="mb-4">
+                                        <label className="text-sm font-bold block mb-1">Location Pin</label>
+                                        <div className="h-[200px] rounded border overflow-hidden">
+                                            <LocationMap
+                                                initialLat={(selectedComplaint.lat || (selectedComplaint as any).lat) as number}
+                                                initialLng={(selectedComplaint.lng || (selectedComplaint as any).lng) as number}
+                                                onLocationSelect={() => { }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span className="text-gray-500">Department:</span>
+                                        <p className="font-medium">{selectedComplaint.department}</p>
+                                    </div>
+                                    <div>
+                                        <span className="text-gray-500">Priority:</span>
+                                        <p className="font-medium uppercase">{selectedComplaint.priority}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button className="btn-primary" onClick={() => setShowViewModal(false)}>Close</button>
                             </div>
                         </div>
                     </div>
