@@ -14,19 +14,19 @@ export default function AdminNav() {
         { href: '/admin/dashboard', label: 'Dashboard' },
         { href: '/admin/complaints', label: 'Manage Complaints' },
         { href: '/admin/priority', label: 'Priority Session' },
-        { href: '/admin/analytics', label: 'Analytics & Reports' },
+        { href: '/admin/analytics', label: 'Analytics' },
     ];
 
     return (
-        <nav className="bg-white border-b-2 border-gray-200 mb-8 shadow-sm">
-            <div className="flex flex-wrap">
+        <nav className="bg-white rounded-lg shadow mb-8 p-2">
+            <div className="flex flex-wrap justify-center gap-2">
                 {navItems.map(item => (
                     <Link
                         key={item.href}
                         href={item.href}
-                        className={`px-8 py-5 text-sm font-bold uppercase tracking-wider transition-all border-b-4 ${isActive(item.href)
-                                ? 'border-[#003366] text-[#003366] bg-blue-50'
-                                : 'border-transparent text-gray-500 hover:text-[#003366] hover:bg-gray-50'
+                        className={`px-6 py-3 text-sm font-bold uppercase tracking-wide rounded transition-all ${isActive(item.href)
+                                ? 'bg-[#003366] text-white'
+                                : 'text-gray-600 hover:bg-gray-100'
                             }`}
                     >
                         {item.label}

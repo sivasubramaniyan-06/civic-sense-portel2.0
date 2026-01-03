@@ -48,7 +48,7 @@ export default function AnalyticsPage() {
 
     if (loading) return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-            <div className="text-2xl font-bold text-[#003366] uppercase tracking-widest animate-pulse">Loading Analytics...</div>
+            <div className="text-xl font-bold text-[#003366] uppercase tracking-widest animate-pulse">Loading Analytics...</div>
         </div>
     );
 
@@ -56,165 +56,101 @@ export default function AnalyticsPage() {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            {/* Top Spacing */}
-            <div className="pt-8"></div>
+            <div className="h-32"></div>
 
-            <div className="max-w-7xl mx-auto px-8 pb-16">
+            <div className="max-w-6xl mx-auto px-6">
 
-                {/* Page Header */}
-                <header className="mb-8">
-                    <h1 className="text-4xl font-black text-[#003366] uppercase tracking-tight">Analytics & Reports</h1>
-                    <p className="text-lg text-gray-600 mt-2 font-medium">Data visualization and export center</p>
+                <header className="text-center mb-10">
+                    <h1 className="text-3xl font-bold text-[#003366] uppercase tracking-wide">Analytics & Reports</h1>
+                    <p className="text-base text-gray-600 mt-2">Data Visualization and Export Center</p>
                 </header>
 
                 <AdminNav />
 
-                {/* SECTION A: Department Load Distribution */}
-                <section className="bg-white rounded-xl shadow-lg mb-12 overflow-hidden">
-                    <div className="px-8 py-6 bg-gray-50 border-b border-gray-200">
-                        <h2 className="text-2xl font-black text-[#003366] uppercase tracking-wide">
-                            Department Load Distribution
-                        </h2>
-                        <p className="text-gray-600 mt-1">Complaint volume by department</p>
+                {/* Department Chart */}
+                <section className="bg-white rounded-lg shadow mb-10 overflow-hidden">
+                    <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 text-center">
+                        <h2 className="text-lg font-bold text-[#003366] uppercase tracking-wide">Department Load Distribution</h2>
                     </div>
 
-                    <div className="p-8">
-                        {/* Chart */}
-                        <div className="h-96 flex items-end gap-6 border-b-4 border-gray-200 pb-4 mb-4">
+                    <div className="p-6">
+                        <div className="h-64 flex items-end gap-4 border-b-2 border-gray-200 pb-2 mb-4">
                             {Object.entries(deptCounts).map(([dept, count]) => {
                                 const height = Math.max((count / maxDeptCount) * 100, 10);
                                 return (
-                                    <div key={dept} className="flex-1 min-w-[80px] flex flex-col items-center justify-end group h-full">
-                                        {/* Value Label */}
-                                        <div className="text-xl font-black text-[#003366] mb-2">{count}</div>
-
-                                        {/* Bar */}
-                                        <div
-                                            className="w-full bg-gradient-to-t from-blue-900 to-blue-500 rounded-t-lg shadow-lg group-hover:from-blue-800 group-hover:to-blue-400 transition-all"
-                                            style={{ height: `${height}%` }}
-                                        ></div>
+                                    <div key={dept} className="flex-1 min-w-[60px] flex flex-col items-center justify-end h-full">
+                                        <div className="text-sm font-bold text-[#003366] mb-2">{count}</div>
+                                        <div className="w-full bg-[#003366] rounded-t" style={{ height: `${height}%` }}></div>
                                     </div>
                                 );
                             })}
                         </div>
-
-                        {/* X-Axis Labels */}
-                        <div className="flex gap-6">
+                        <div className="flex gap-4">
                             {Object.keys(deptCounts).map((dept) => (
-                                <div key={dept} className="flex-1 min-w-[80px] text-center">
-                                    <p className="text-sm font-bold text-gray-600 uppercase tracking-wide truncate" title={dept}>
-                                        {dept}
-                                    </p>
+                                <div key={dept} className="flex-1 min-w-[60px] text-center">
+                                    <p className="text-xs font-bold text-gray-500 uppercase truncate" title={dept}>{dept}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                {/* SECTION B: Performance Metrics */}
-                <section className="bg-white rounded-xl shadow-lg mb-12 overflow-hidden">
-                    <div className="px-8 py-6 bg-gray-50 border-b border-gray-200">
-                        <h2 className="text-2xl font-black text-[#003366] uppercase tracking-wide">
-                            Performance Metrics
-                        </h2>
-                        <p className="text-gray-600 mt-1">System efficiency indicators</p>
+                {/* Performance Metrics */}
+                <section className="bg-white rounded-lg shadow mb-10 overflow-hidden">
+                    <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 text-center">
+                        <h2 className="text-lg font-bold text-[#003366] uppercase tracking-wide">Performance Metrics</h2>
                     </div>
 
                     {analytics && (
-                        <div className="p-8">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {/* Resolution Rate */}
-                                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 text-center border border-green-200">
-                                    <p className="text-sm font-bold text-green-800 uppercase tracking-widest mb-4">Resolution Rate</p>
-                                    <div className="relative inline-block">
-                                        <svg className="w-40 h-40" viewBox="0 0 100 100">
-                                            <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" strokeWidth="10" />
-                                            <circle
-                                                cx="50" cy="50" r="45" fill="none" stroke="#16a34a" strokeWidth="10"
-                                                strokeDasharray={`${analytics.resolution_rate * 2.83} 283`}
-                                                strokeLinecap="round"
-                                                transform="rotate(-90 50 50)"
-                                            />
-                                        </svg>
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className="text-4xl font-black text-green-700">{analytics.resolution_rate}%</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-gray-600 mt-4 font-medium">Cases successfully closed</p>
+                                <div className="bg-green-50 rounded-lg p-6 text-center border border-green-200">
+                                    <p className="text-xs font-bold text-green-800 uppercase tracking-wide mb-3">Resolution Rate</p>
+                                    <p className="text-5xl font-bold text-green-700 mb-2">{analytics.resolution_rate}%</p>
+                                    <p className="text-sm text-gray-600">Cases successfully closed</p>
                                 </div>
 
-                                {/* Priority Handling */}
-                                <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-8 text-center border border-red-200">
-                                    <p className="text-sm font-bold text-red-800 uppercase tracking-widest mb-4">Priority Queue</p>
-                                    <p className="text-6xl font-black text-red-700 mb-4">{analytics.high_priority_count}</p>
-                                    <p className="text-gray-600 font-medium">Critical cases pending</p>
-                                    <div className="mt-6">
-                                        <div className="bg-red-200 rounded-full h-3 w-full overflow-hidden">
-                                            <div
-                                                className="bg-red-600 h-full rounded-full"
-                                                style={{ width: `${Math.min((analytics.high_priority_count / (analytics.pending_count || 1)) * 100, 100)}%` }}
-                                            ></div>
-                                        </div>
-                                        <p className="text-xs text-red-600 mt-2 font-bold uppercase">
-                                            {Math.round((analytics.high_priority_count / (analytics.pending_count || 1)) * 100)}% of pending
-                                        </p>
-                                    </div>
+                                {/* Priority Queue */}
+                                <div className="bg-red-50 rounded-lg p-6 text-center border border-red-200">
+                                    <p className="text-xs font-bold text-red-800 uppercase tracking-wide mb-3">Priority Queue</p>
+                                    <p className="text-5xl font-bold text-red-700 mb-2">{analytics.high_priority_count}</p>
+                                    <p className="text-sm text-gray-600">Critical cases pending</p>
                                 </div>
 
-                                {/* Processing Efficiency */}
-                                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 text-center border border-blue-200">
-                                    <p className="text-sm font-bold text-blue-800 uppercase tracking-widest mb-4">Processing Load</p>
-                                    <p className="text-6xl font-black text-blue-700 mb-4">{analytics.pending_count}</p>
-                                    <p className="text-gray-600 font-medium">Total pending cases</p>
-                                    <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-                                        <div className="bg-white rounded-lg p-3">
-                                            <p className="font-black text-blue-700 text-lg">{analytics.total_complaints}</p>
-                                            <p className="text-gray-500 uppercase text-xs font-bold">Total</p>
-                                        </div>
-                                        <div className="bg-white rounded-lg p-3">
-                                            <p className="font-black text-green-700 text-lg">{analytics.resolved_count}</p>
-                                            <p className="text-gray-500 uppercase text-xs font-bold">Resolved</p>
-                                        </div>
-                                    </div>
+                                {/* Processing Load */}
+                                <div className="bg-blue-50 rounded-lg p-6 text-center border border-blue-200">
+                                    <p className="text-xs font-bold text-blue-800 uppercase tracking-wide mb-3">Processing Load</p>
+                                    <p className="text-5xl font-bold text-blue-700 mb-2">{analytics.pending_count}</p>
+                                    <p className="text-sm text-gray-600">Total pending cases</p>
                                 </div>
                             </div>
                         </div>
                     )}
                 </section>
 
-                {/* SECTION C: Export Center */}
-                <section className="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div className="px-8 py-6 bg-gray-50 border-b border-gray-200">
-                        <h2 className="text-2xl font-black text-[#003366] uppercase tracking-wide">
-                            Export Center
-                        </h2>
-                        <p className="text-gray-600 mt-1">Download reports and data files</p>
+                {/* Export Center */}
+                <section className="bg-white rounded-lg shadow mb-16 overflow-hidden">
+                    <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 text-center">
+                        <h2 className="text-lg font-bold text-[#003366] uppercase tracking-wide">Export Center</h2>
                     </div>
 
-                    <div className="p-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* CSV Export */}
-                            <div className="border-2 border-gray-200 rounded-xl p-8 hover:border-[#003366] transition-colors group">
-                                <div className="text-5xl mb-4 opacity-50 group-hover:opacity-100 transition-opacity">📊</div>
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">Full Data Export (CSV)</h3>
-                                <p className="text-gray-600 mb-6">Download complete complaint database in CSV format for external analysis.</p>
-                                <button
-                                    onClick={downloadAdminExport}
-                                    className="w-full bg-[#003366] text-white py-4 rounded-lg font-bold uppercase tracking-wider text-lg hover:bg-blue-900 transition-colors shadow-lg"
-                                >
+                    <div className="p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="border border-gray-200 rounded-lg p-6 text-center">
+                                <div className="text-4xl mb-3 opacity-50">📊</div>
+                                <h3 className="text-base font-bold text-gray-800 mb-2">Full Data Export (CSV)</h3>
+                                <p className="text-sm text-gray-600 mb-4">Download complete database for analysis.</p>
+                                <button onClick={downloadAdminExport} className="bg-[#003366] text-white px-6 py-3 rounded font-bold uppercase text-sm tracking-wide hover:bg-blue-900 transition-colors">
                                     Download CSV
                                 </button>
                             </div>
 
-                            {/* Summary Report */}
-                            <div className="border-2 border-gray-200 rounded-xl p-8 hover:border-[#003366] transition-colors group">
-                                <div className="text-5xl mb-4 opacity-50 group-hover:opacity-100 transition-opacity">📋</div>
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">Summary Report</h3>
-                                <p className="text-gray-600 mb-6">Generate executive summary with key metrics and trends.</p>
-                                <button
-                                    onClick={() => window.print()}
-                                    className="w-full bg-gray-200 text-gray-700 py-4 rounded-lg font-bold uppercase tracking-wider text-lg hover:bg-gray-300 transition-colors"
-                                >
+                            <div className="border border-gray-200 rounded-lg p-6 text-center">
+                                <div className="text-4xl mb-3 opacity-50">📋</div>
+                                <h3 className="text-base font-bold text-gray-800 mb-2">Summary Report</h3>
+                                <p className="text-sm text-gray-600 mb-4">Generate executive summary with key metrics.</p>
+                                <button onClick={() => window.print()} className="bg-gray-200 text-gray-700 px-6 py-3 rounded font-bold uppercase text-sm tracking-wide hover:bg-gray-300 transition-colors">
                                     Print Summary
                                 </button>
                             </div>
