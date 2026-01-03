@@ -12,31 +12,28 @@ import {
 } from '@/lib/api';
 import AdminNav from '@/components/AdminNav';
 
-export default function AdminComplaintsPage() {
+export default function ManageComplaintsPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [complaints, setComplaints] = useState<Grievance[]>([]);
-    const [activeTab, setActiveTab] = useState('new');
+
+    // Filters
     const [search, setSearch] = useState('');
-    const [deptFilter, setDeptFilter] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('');
+    const [priorityFilter, setPriorityFilter] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
 
     useEffect(() => {
         checkAuthAndLoad();
-    }, [activeTab]);
-
-    useEffect(() => {
-        if (!loading) loadComplaints();
-    }, [deptFilter]);
+    }, []);
 
     const checkAuthAndLoad = async () => {
         const token = getStoredToken();
         const user = getStoredUser();
-
         if (!token || user?.role !== 'admin') {
             router.push('/login');
             return;
         }
-
         loadComplaints();
     };
 
@@ -44,11 +41,10 @@ export default function AdminComplaintsPage() {
         setLoading(true);
         try {
             const filters: AdminComplaintFilters = {};
-            if (activeTab !== 'all') {
-                filters.status = activeTab === 'new' ? 'submitted' : activeTab;
-            }
             if (search) filters.search = search;
-            if (deptFilter) (filters as any).department = deptFilter;
+            if (statusFilter) filters.status = statusFilter;
+            if (priorityFilter) filters.priority = priorityFilter;
+            if (categoryFilter) filters.category = categoryFilter;
 
             const data = await getAdminComplaints(filters);
             setComplaints(data);
@@ -58,40 +54,32 @@ export default function AdminComplaintsPage() {
         setLoading(false);
     };
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleFilter = () => {
         loadComplaints();
     };
 
-    const StatusTabs = () => (
-        <div className="flex border-b border-gray-200 mb-6 overflow-x-auto gap-4 no-scrollbar">
-            {[
-                { id: 'new', label: 'New Requests' },
-                { id: 'assigned', label: 'Assigned' },
-                { id: 'in_progress', label: 'In Progress' },
-                { id: 'resolved', label: 'Resolved' },
-                { id: 'all', label: 'All Records' }
-            ].map(tab => (
-                <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`pb-3 font-bold text-sm whitespace-nowrap transition-all border-b-4 ${activeTab === tab.id
-                            ? 'border-[#003366] text-[#003366]'
-                            : 'border-transparent text-gray-400 hover:text-gray-700 hover:border-gray-200'
-                        }`}
-                >
-                    {tab.label}
-                </button>
-            ))}
-        </div>
-    );
+    const clearFilters = () => {
+        setSearch('');
+        setCategoryFilter('');
+        setPriorityFilter('');
+        setStatusFilter('');
+        setTimeout(loadComplaints, 100);
+    };
 
-    const getPriorityClass = (p: string) => {
+    const getPriorityStyle = (p: string) => {
         switch (p) {
-            case 'high': return 'bg-red-50 text-red-700 border border-red-200';
-            case 'medium': return 'bg-orange-50 text-orange-700 border border-orange-200';
-            case 'low': return 'bg-green-50 text-green-700 border border-green-200';
-            default: return 'bg-gray-50 text-gray-700 border border-gray-200';
+            case 'high': return 'bg-red-100 text-red-800 border-red-300';
+            case 'medium': return 'bg-orange-100 text-orange-800 border-orange-300';
+            default: return 'bg-green-100 text-green-800 border-green-300';
+        }
+    };
+
+    const getStatusStyle = (s: string) => {
+        switch (s) {
+            case 'resolved': return 'text-green-700';
+            case 'in_progress': return 'text-blue-700';
+            case 'assigned': return 'text-purple-700';
+            default: return 'text-gray-700';
         }
     };
 
@@ -99,126 +87,177 @@ export default function AdminComplaintsPage() {
         day: '2-digit', month: 'short', year: 'numeric'
     });
 
-    if (loading && complaints.length === 0) return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
-            <div className="text-[#003366] font-bold text-lg animate-pulse">Loading Registry...</div>
-        </div>
-    );
-
-    const departments = ['Public Works', 'Health', 'Education', 'Transport', 'Municipal', 'Revenue'];
-
     return (
-        <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="min-h-screen bg-gray-100">
+            {/* Top Spacing */}
+            <div className="pt-8"></div>
 
-                <header className="mb-6 border-b border-gray-200 pb-4">
-                    <h1 className="text-3xl font-extrabold text-[#003366] tracking-tight">Central Complaints Registry</h1>
-                    <p className="text-sm text-gray-500 mt-1 uppercase tracking-wide">Manage and Update Grievance Records</p>
+            <div className="max-w-7xl mx-auto px-8 pb-16">
+
+                {/* Page Header */}
+                <header className="mb-8">
+                    <h1 className="text-4xl font-black text-[#003366] uppercase tracking-tight">Manage Complaints</h1>
+                    <p className="text-lg text-gray-600 mt-2 font-medium">View, filter, and process all grievance records</p>
                 </header>
 
                 <AdminNav />
 
-                <div className="bg-white rounded shadow-sm border border-gray-200 overflow-hidden flex flex-col min-h-[500px]">
-                    {/* Toolbar */}
-                    <div className="p-6 border-b border-gray-100 bg-gray-50 flex flex-wrap gap-4 justify-between items-center">
-                        <form onSubmit={handleSearch} className="flex gap-2 w-full max-w-lg">
+                {/* FILTERS SECTION */}
+                <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
+                    <h2 className="text-lg font-bold text-gray-800 uppercase tracking-wide mb-6">Filter Records</h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                        {/* Search */}
+                        <div className="lg:col-span-2">
+                            <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">Search</label>
                             <input
                                 type="text"
-                                placeholder="Ref ID, Keyword, Location..."
-                                className="flex-1 form-input py-2 px-3 border border-gray-300 rounded text-sm focus:outline-none focus:border-[#003366] shadow-sm"
+                                placeholder="ID, keyword, location..."
+                                className="w-full p-4 text-lg border-2 border-gray-300 rounded-lg focus:border-[#003366] focus:outline-none"
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
                             />
-                            <button type="submit" className="bg-[#003366] text-white px-5 py-2 rounded text-sm font-bold hover:bg-blue-900 transition-colors shadow-sm">SEARCH</button>
-                        </form>
+                        </div>
 
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-gray-500 uppercase">Filter:</span>
+                        {/* Category */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">Category</label>
                             <select
-                                className="form-select py-2 px-3 border border-gray-300 rounded text-sm focus:outline-none focus:border-[#003366] shadow-sm min-w-[200px]"
-                                value={deptFilter}
-                                onChange={(e) => setDeptFilter(e.target.value)}
+                                className="w-full p-4 text-lg border-2 border-gray-300 rounded-lg focus:border-[#003366] focus:outline-none"
+                                value={categoryFilter}
+                                onChange={e => setCategoryFilter(e.target.value)}
                             >
-                                <option value="">All Departments</option>
-                                {departments.map(d => <option key={d} value={d}>{d}</option>)}
+                                <option value="">All Categories</option>
+                                <option value="roads">Roads</option>
+                                <option value="water">Water</option>
+                                <option value="electricity">Electricity</option>
+                                <option value="sanitation">Sanitation</option>
+                                <option value="health">Health</option>
+                                <option value="education">Education</option>
+                            </select>
+                        </div>
+
+                        {/* Priority */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">Priority</label>
+                            <select
+                                className="w-full p-4 text-lg border-2 border-gray-300 rounded-lg focus:border-[#003366] focus:outline-none"
+                                value={priorityFilter}
+                                onChange={e => setPriorityFilter(e.target.value)}
+                            >
+                                <option value="">All Priorities</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+
+                        {/* Status */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">Status</label>
+                            <select
+                                className="w-full p-4 text-lg border-2 border-gray-300 rounded-lg focus:border-[#003366] focus:outline-none"
+                                value={statusFilter}
+                                onChange={e => setStatusFilter(e.target.value)}
+                            >
+                                <option value="">All Statuses</option>
+                                <option value="submitted">New</option>
+                                <option value="assigned">Assigned</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
                             </select>
                         </div>
                     </div>
 
-                    <div className="px-6 pt-6 bg-white">
-                        <StatusTabs />
+                    <div className="flex gap-4 mt-6">
+                        <button
+                            onClick={handleFilter}
+                            className="bg-[#003366] text-white px-8 py-4 rounded-lg font-bold uppercase tracking-wider text-lg hover:bg-blue-900 transition-colors shadow-lg"
+                        >
+                            Apply Filters
+                        </button>
+                        <button
+                            onClick={clearFilters}
+                            className="bg-gray-200 text-gray-700 px-8 py-4 rounded-lg font-bold uppercase tracking-wider text-lg hover:bg-gray-300 transition-colors"
+                        >
+                            Clear All
+                        </button>
+                    </div>
+                </section>
+
+                {/* TABLE SECTION */}
+                <section className="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div className="px-8 py-6 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                        <h2 className="text-lg font-bold text-gray-800 uppercase tracking-wide">
+                            Complaints Registry ({complaints.length} Records)
+                        </h2>
                     </div>
 
-                    <div className="flex-1 overflow-x-auto w-full">
-                        <table className="w-full text-left text-sm border-collapse">
-                            <thead className="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-xs sticky top-0 bg-gray-50 z-10">
-                                <tr>
-                                    <th className="p-4 w-32 whitespace-nowrap">Reference ID</th>
-                                    <th className="p-4 w-40 whitespace-nowrap">Category</th>
-                                    <th className="p-4 min-w-[300px]">Description / Subject</th>
-                                    <th className="p-4 w-28 whitespace-nowrap">Priority</th>
-                                    <th className="p-4 w-32 whitespace-nowrap">Status</th>
-                                    <th className="p-4 w-32 whitespace-nowrap">Received Date</th>
-                                    <th className="p-4 w-24 text-right whitespace-nowrap">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {complaints.length === 0 ? (
+                    {loading ? (
+                        <div className="p-16 text-center text-xl text-gray-500 font-bold">Loading records...</div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-[#003366] text-white uppercase text-sm font-bold tracking-wider">
                                     <tr>
-                                        <td colSpan={7} className="p-12 text-center text-gray-500 italic">
-                                            No complaints found matching current filters.
-                                        </td>
+                                        <th className="p-5">Reference ID</th>
+                                        <th className="p-5">Category</th>
+                                        <th className="p-5">Priority</th>
+                                        <th className="p-5">Status</th>
+                                        <th className="p-5">Date</th>
+                                        <th className="p-5 text-center">Action</th>
                                     </tr>
-                                ) : (
-                                    complaints.map(c => (
-                                        <tr key={c.id} className="hover:bg-blue-50 transition-colors group">
-                                            <td className="p-4 font-mono text-xs text-gray-500 font-medium">#{c.id.substring(0, 8).toUpperCase()}</td>
-                                            <td className="p-4">
-                                                <span className="font-semibold text-gray-700 capitalize text-xs bg-gray-100 px-2 py-1 rounded inline-block whitespace-nowrap">
-                                                    {c.category.replace('_', ' ')}
-                                                </span>
-                                            </td>
-                                            <td className="p-4">
-                                                <p className="line-clamp-2 text-gray-800 font-medium leading-snug">{c.description}</p>
-                                                <p className="text-xs text-gray-400 mt-1 font-medium">{c.location}</p>
-                                            </td>
-                                            <td className="p-4">
-                                                <span className={`inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide border shadow-sm ${getPriorityClass(c.priority)}`}>
-                                                    {c.priority}
-                                                </span>
-                                            </td>
-                                            <td className="p-4">
-                                                <span className={`capitalize font-bold text-xs flex items-center gap-1 ${c.status === 'resolved' ? 'text-green-700' : 'text-gray-600'
-                                                    }`}>
-                                                    <span className={`w-2 h-2 rounded-full ${c.status === 'resolved' ? 'bg-green-500' :
-                                                            c.status === 'in_progress' ? 'bg-blue-500' :
-                                                                'bg-gray-400'
-                                                        }`}></span>
-                                                    {c.status.replace('_', ' ')}
-                                                </span>
-                                            </td>
-                                            <td className="p-4 text-gray-500 text-xs font-mono whitespace-nowrap">{formatDate(c.created_at)}</td>
-                                            <td className="p-4 text-right">
-                                                <Link
-                                                    href={`/admin/complaints/${c.id}`}
-                                                    className="inline-block px-4 py-1.5 border border-[#003366] rounded text-[#003366] bg-transparent hover:bg-[#003366] hover:text-white text-xs font-bold transition-all shadow-sm uppercase tracking-wide"
-                                                >
-                                                    View
-                                                </Link>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {complaints.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={6} className="p-16 text-center text-xl text-gray-500 font-bold italic">
+                                                No complaints found matching filters.
                                             </td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                                    ) : (
+                                        complaints.map((c, idx) => (
+                                            <tr key={c.id} className={`hover:bg-blue-50 transition-colors ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                                <td className="p-5 font-mono font-bold text-gray-800 text-lg">
+                                                    #{c.id.substring(0, 8).toUpperCase()}
+                                                </td>
+                                                <td className="p-5 capitalize font-semibold text-gray-700 text-lg">
+                                                    {c.category.replace('_', ' ')}
+                                                </td>
+                                                <td className="p-5">
+                                                    <span className={`px-4 py-2 rounded-full border-2 font-bold uppercase text-sm ${getPriorityStyle(c.priority)}`}>
+                                                        {c.priority}
+                                                    </span>
+                                                </td>
+                                                <td className="p-5">
+                                                    <span className={`font-bold uppercase tracking-wide ${getStatusStyle(c.status)}`}>
+                                                        {c.status.replace('_', ' ')}
+                                                    </span>
+                                                </td>
+                                                <td className="p-5 text-gray-600 font-medium">
+                                                    {formatDate(c.created_at)}
+                                                </td>
+                                                <td className="p-5 text-center">
+                                                    <Link
+                                                        href={`/admin/complaints/${c.id}`}
+                                                        className="inline-block bg-[#003366] text-white px-6 py-3 rounded-lg font-bold uppercase text-sm tracking-wide hover:bg-blue-900 transition-colors shadow"
+                                                    >
+                                                        View / Manage
+                                                    </Link>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    <div className="px-8 py-4 bg-gray-50 border-t border-gray-200 text-sm text-gray-500 font-medium">
+                        Showing {complaints.length} records
                     </div>
-                    {/* Footer */}
-                    <div className="p-3 border-t border-gray-200 bg-gray-50 text-xs text-gray-500 font-medium flex justify-between items-center">
-                        <span>System Generated Report</span>
-                        <span>Total Records: {complaints.length}</span>
-                    </div>
-                </div>
+                </section>
+
             </div>
         </div>
     );
