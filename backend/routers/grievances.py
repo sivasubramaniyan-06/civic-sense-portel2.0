@@ -1,0 +1,173 @@
+"""
+Grievance API Routes
+"""
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from typing import Optional
+from datetime import datetime
+import base64
+import os
+
+from models.schemas import (
+    GrievanceSubmission,
+    Grievance,
+    GrievanceResponse,
+    DuplicateCheckRequest,
+    DuplicateCheckResponse,
+    ClassificationResult,
+    Status,
+    TimelineEntry,
+    GrievanceCategory
+)
+from storage.data_store import data_store
+from services.ai_classifier import classify_grievance
+from services.duplicate_checker import check_duplicates
+
+router = APIRouter(prefix="/api/grievances", tags=["Grievances"])
+
+
+@router.post("/classify", response_model=ClassificationResult)
+async def classify_complaint(description: str, category: GrievanceCategory):
+    """
+    Classify a grievance description and return AI analysis.
+    Used for real-time preview before submission.
+    """
+    # Validate description
+    if not description or len(description.strip()) < 20:
+        raise HTTPException(
+            status_code=400,
+            detail="Description must be at least 20 characters long."
+        )
+    
+    result = classify_grievance(description, category)
+    return result
+
+
+@router.post("/check-duplicate", response_model=DuplicateCheckResponse)
+async def check_duplicate(request: DuplicateCheckRequest):
+    """
+    Check if a similar complaint already exists.
+    """
+    # Validate description
+    if not request.description or len(request.description.strip()) < 20:
+        raise HTTPException(
+            status_code=400,
+            detail="Description must be at least 20 characters long."
+        )
+    
+    existing = data_store.get_descriptions_for_category(request.category.value)
+    # Pass location if available (from extended request)
+    location = getattr(request, 'location', '')
+    result = check_duplicates(
+        request.description, 
+        request.category, 
+        existing,
+        new_location=location
+    )
+    return result
+
+
+@router.post("", response_model=GrievanceResponse)
+async def submit_grievance(submission: GrievanceSubmission):
+    """
+    Submit a new grievance.
+    Performs AI classification and duplicate check.
+    """
+    # Validate inputs
+    if not submission.description or len(submission.description.strip()) < 20:
+        raise HTTPException(
+            status_code=400,
+            detail="Description must be at least 20 characters long."
+        )
+    
+    if not submission.location or len(submission.location.strip()) == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Location is required."
+        )
+    
+    # Classify the grievance
+    classification = classify_grievance(submission.description, submission.category)
+    
+    # Check for duplicates with location
+    existing = data_store.get_descriptions_for_category(submission.category.value)
+    duplicate_check = check_duplicates(
+        submission.description, 
+        submission.category, 
+        existing,
+        new_location=submission.location
+    )
+    
+    # Generate complaint ID
+    complaint_id = data_store.generate_id()
+    
+    # Handle image - store base64 data for preview
+    image_path = None
+    image_data = None
+    if submission.image_base64:
+        # Store the base64 data directly for demo (in production, save to file system)
+        image_path = f"uploads/{complaint_id}.jpg"
+        image_data = submission.image_base64
+    
+    # Create grievance record
+    now = datetime.now().isoformat()
+    grievance = Grievance(
+        id=complaint_id,
+        category=classification.detected_category,
+        description=submission.description,
+        location=submission.location,
+        image_path=image_path,
+        image_data=image_data,
+        submitter_name=submission.submitter_name or "Anonymous",
+        submitter_phone=submission.submitter_phone,
+        submitter_email=submission.submitter_email,
+        status=Status.SUBMITTED,
+        priority=classification.priority,
+        department=classification.department,
+        ai_explanation=classification.explanation,
+        keywords_found=classification.keywords_found,
+        is_duplicate=duplicate_check.is_duplicate,
+        similar_to=duplicate_check.similar_complaint_id,
+        duplicate_score=duplicate_check.similarity_score,
+        timeline=[
+            TimelineEntry(
+                status=Status.SUBMITTED,
+                timestamp=now,
+                remarks="Grievance submitted successfully"
+            )
+        ],
+        created_at=now,
+        updated_at=now
+    )
+    
+    # Store grievance
+    data_store.create_grievance(grievance)
+    
+    return GrievanceResponse(
+        success=True,
+        complaint_id=complaint_id,
+        message=f"Your grievance has been registered successfully. "
+               f"Complaint ID: {complaint_id}. "
+               f"Please save this ID for future reference.",
+        classification=classification
+    )
+
+
+@router.get("/{grievance_id}", response_model=Grievance)
+async def get_grievance(grievance_id: str):
+    """
+    Get grievance details by ID.
+    """
+    if not grievance_id or len(grievance_id.strip()) == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Complaint ID is required."
+        )
+    
+    grievance = data_store.get_grievance(grievance_id.strip().upper())
+    if not grievance:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Grievance with ID {grievance_id} not found. "
+                  f"Please check the complaint ID and try again."
+        )
+    return grievance
