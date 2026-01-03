@@ -34,6 +34,10 @@ export default function LodgeGrievance() {
     const [location, setLocation] = useState('');
     const [imageBase64, setImageBase64] = useState('');
     const [imageName, setImageName] = useState('');
+    const [audioBase64, setAudioBase64] = useState('');
+    const [audioName, setAudioName] = useState('');
+    const [isRecording, setIsRecording] = useState(false);
+    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
     const [submitterName, setSubmitterName] = useState('');
     const [submitterPhone, setSubmitterPhone] = useState('');
     const [submitterEmail, setSubmitterEmail] = useState('');
@@ -53,6 +57,68 @@ export default function LodgeGrievance() {
             };
             reader.readAsDataURL(file);
         }
+    };
+
+    const handleAudioUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Validate file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                setError('Audio file size must be less than 10MB');
+                return;
+            }
+            // Validate file type
+            const validTypes = ['audio/mp3', 'audio/mpeg', 'audio/wav', 'audio/m4a', 'audio/x-m4a', 'audio/webm'];
+            if (!validTypes.includes(file.type)) {
+                setError('Please upload MP3, WAV, or M4A audio file');
+                return;
+            }
+            setAudioName(file.name);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAudioBase64(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+            const chunks: Blob[] = [];
+
+            recorder.ondataavailable = (e) => chunks.push(e.data);
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'audio/webm' });
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setAudioBase64(reader.result as string);
+                    setAudioName('voice_recording.webm');
+                };
+                reader.readAsDataURL(blob);
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            recorder.start();
+            setMediaRecorder(recorder);
+            setIsRecording(true);
+        } catch {
+            setError('Unable to access microphone. Please allow microphone access or upload a file.');
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorder) {
+            mediaRecorder.stop();
+            setIsRecording(false);
+            setMediaRecorder(null);
+        }
+    };
+
+    const removeAudio = () => {
+        setAudioBase64('');
+        setAudioName('');
     };
 
     const handleStep2Submit = async () => {
@@ -113,7 +179,7 @@ export default function LodgeGrievance() {
 
     return (
         <div className="page-content">
-            <div className="max-w-3xl mx-auto px-4">
+            <div className="w-full max-w-3xl mx-auto px-4">
                 <h1 className="text-2xl font-bold text-center text-[#003366] mb-2">
                     Lodge Your Grievance
                 </h1>

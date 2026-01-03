@@ -1,12 +1,31 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { getStoredUser, getStoredToken, removeStoredToken } from '@/lib/api';
+import type { AuthUser } from '@/lib/api';
 
 export default function Header() {
     const pathname = usePathname();
+    const router = useRouter();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [user, setUser] = useState<AuthUser | null>(null);
+
+    useEffect(() => {
+        // Check for logged-in user on mount
+        const storedUser = getStoredUser();
+        const token = getStoredToken();
+        if (token && storedUser) {
+            setUser(storedUser);
+        }
+    }, [pathname]); // Re-check on route change
+
+    const handleLogout = () => {
+        removeStoredToken();
+        setUser(null);
+        router.push('/');
+    };
 
     const navLinks = [
         { href: '/', label: 'Home' },
@@ -70,13 +89,41 @@ export default function Header() {
                                     {link.label}
                                 </Link>
                             ))}
-                            {/* Admin Login Button */}
-                            <Link
-                                href="/admin"
-                                className={`gov-nav-admin ${pathname === '/admin' ? 'active' : ''}`}
-                            >
-                                🔐 Admin Login
-                            </Link>
+
+                            {/* Auth Section */}
+                            {user ? (
+                                <>
+                                    <Link
+                                        href="/dashboard"
+                                        className={`gov-nav-item ${pathname === '/dashboard' ? 'active' : ''}`}
+                                    >
+                                        👤 {user.name.split(' ')[0]}
+                                    </Link>
+                                    {user.role === 'admin' && (
+                                        <Link
+                                            href="/admin"
+                                            className={`gov-nav-admin ${pathname === '/admin' ? 'active' : ''}`}
+                                        >
+                                            🔐 Admin
+                                        </Link>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    <Link
+                                        href="/login"
+                                        className={`gov-nav-item ${pathname === '/login' ? 'active' : ''}`}
+                                    >
+                                        Login
+                                    </Link>
+                                    <Link
+                                        href="/admin"
+                                        className={`gov-nav-admin ${pathname === '/admin' ? 'active' : ''}`}
+                                    >
+                                        🔐 Admin
+                                    </Link>
+                                </>
+                            )}
                         </nav>
 
                         {/* Mobile Menu Button */}
@@ -103,9 +150,46 @@ export default function Header() {
                             {link.label}
                         </Link>
                     ))}
+                    {user ? (
+                        <>
+                            <Link
+                                href="/dashboard"
+                                className="gov-nav-mobile-item"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                👤 Dashboard
+                            </Link>
+                            <button
+                                className="gov-nav-mobile-item text-left"
+                                onClick={() => {
+                                    handleLogout();
+                                    setMobileMenuOpen(false);
+                                }}
+                            >
+                                🚪 Logout
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link
+                                href="/login"
+                                className="gov-nav-mobile-item"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                🔑 Login
+                            </Link>
+                            <Link
+                                href="/register"
+                                className="gov-nav-mobile-item"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                📝 Register
+                            </Link>
+                        </>
+                    )}
                     <Link
                         href="/admin"
-                        className={`gov-nav-mobile-item gov-nav-mobile-admin ${pathname === '/admin' ? 'active' : ''}`}
+                        className="gov-nav-mobile-item gov-nav-mobile-admin"
                         onClick={() => setMobileMenuOpen(false)}
                     >
                         🔐 Admin Login

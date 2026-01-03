@@ -4,8 +4,10 @@ Main entry point
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 
-from routers import grievances, admin, auth
+from routers import grievances, admin, auth, user
 
 # Create FastAPI app
 app = FastAPI(
@@ -30,6 +32,13 @@ app.add_middleware(
 app.include_router(grievances.router)
 app.include_router(admin.router)
 app.include_router(auth.router)
+app.include_router(user.router)
+
+# Create uploads directory if not exists
+os.makedirs("uploads/audio", exist_ok=True)
+
+# Mount static files for uploads
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 @app.get("/")

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getAllGrievances, updateGrievanceStatus, adminLogin, getAdminStats } from '@/lib/api';
+import { useRouter } from 'next/navigation';
+import { getAllGrievances, updateGrievanceStatus, adminLogin, getAdminStats, login, setStoredToken, setStoredUser, getStoredUser, getStoredToken } from '@/lib/api';
 import type { Grievance, AdminStats } from '@/lib/api';
 
 const DEPARTMENTS = [
@@ -30,6 +31,7 @@ const getDepartmentForCategory = (category: string): string => {
 };
 
 export default function AdminDashboard() {
+    const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -49,6 +51,16 @@ export default function AdminDashboard() {
     const [selectedOfficer, setSelectedOfficer] = useState('');
     const [resolutionDays, setResolutionDays] = useState(7);
 
+    // Check for existing JWT admin login
+    useEffect(() => {
+        const token = getStoredToken();
+        const user = getStoredUser();
+        if (token && user?.role === 'admin') {
+            // Redirect to new admin dashboard
+            router.push('/admin/dashboard');
+        }
+    }, [router]);
+
     const handleLogin = async () => {
         if (!username.trim() || !password.trim()) {
             setLoginError('Please enter username and password');
@@ -56,6 +68,21 @@ export default function AdminDashboard() {
         }
         setLoginError('');
         try {
+            // First try JWT login with email format
+            const emailFormat = username.includes('@') ? username : `${username}@civicsense.gov.in`;
+            const jwtResult = await login(emailFormat, password);
+
+            if (jwtResult.success && jwtResult.token && jwtResult.user) {
+                setStoredToken(jwtResult.token);
+                setStoredUser(jwtResult.user);
+
+                if (jwtResult.user.role === 'admin') {
+                    router.push('/admin/dashboard');
+                    return;
+                }
+            }
+
+            // Fallback to legacy admin login
             const result = await adminLogin(username, password);
             if (result.success) {
                 setIsLoggedIn(true);

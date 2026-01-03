@@ -88,6 +88,10 @@ class DataStore:
             if g.category.value == category:
                 results.append((gid, g.description, g.location))
         return results
+    
+    def get_user_grievances(self, user_id: str) -> List[Grievance]:
+        """Get all grievances submitted by a specific user"""
+        return [g for g in self.grievances.values() if g.user_id == user_id]
 
 
 # Singleton instance

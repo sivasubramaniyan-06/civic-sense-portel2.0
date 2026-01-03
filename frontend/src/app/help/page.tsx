@@ -19,7 +19,7 @@ export default function Help() {
 
     return (
         <div className="page-content">
-            <div className="max-w-4xl mx-auto px-4">
+            <div className="w-full max-w-4xl mx-auto px-4">
                 <h1 className="text-2xl font-bold text-center text-[#003366] mb-8">Help & FAQ</h1>
 
                 <div className="grid md:grid-cols-3 gap-4 mb-8">

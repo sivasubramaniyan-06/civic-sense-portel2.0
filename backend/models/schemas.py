@@ -35,6 +35,7 @@ class GrievanceSubmission(BaseModel):
     description: str = Field(..., min_length=20, max_length=2000)
     location: str
     image_base64: Optional[str] = None
+    audio_base64: Optional[str] = None  # Base64 encoded audio file
     submitter_name: Optional[str] = "Anonymous"
     submitter_phone: Optional[str] = None
     submitter_email: Optional[str] = None
@@ -78,9 +79,11 @@ class Grievance(BaseModel):
     location: str
     image_path: Optional[str] = None
     image_data: Optional[str] = None  # Base64 image data for preview
+    audio_path: Optional[str] = None  # Path to voice note audio file
     submitter_name: str
     submitter_phone: Optional[str] = None
     submitter_email: Optional[str] = None
+    user_id: Optional[str] = None  # Link to authenticated user
     status: Status = Status.SUBMITTED
     priority: Priority = Priority.MEDIUM
     department: str = "General"

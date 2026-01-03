@@ -59,7 +59,7 @@ export default function TrackStatus() {
 
     return (
         <div className="page-content">
-            <div className="max-w-3xl mx-auto px-4">
+            <div className="w-full max-w-3xl mx-auto px-4">
                 <h1 className="text-2xl font-bold text-center text-[#003366] mb-2">
                     Track Your Grievance
                 </h1>
