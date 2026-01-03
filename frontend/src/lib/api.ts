@@ -470,6 +470,15 @@ export async function getAdminByDepartment(): Promise<Record<string, number>> {
   return response.json();
 }
 
+export async function getAdminComplaintDetail(id: string): Promise<{ success: boolean; complaint: Grievance }> {
+  const token = getStoredToken();
+  const response = await fetch(`${API_BASE_URL}/api/admin/complaints/${id}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to fetch details');
+  return response.json();
+}
+
 export async function downloadAdminExport(): Promise<void> {
   const token = getStoredToken();
   const response = await fetch(`${API_BASE_URL}/api/admin/analytics/export`, {
