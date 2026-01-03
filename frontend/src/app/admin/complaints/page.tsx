@@ -22,8 +22,7 @@ export default function AdminComplaintsPage() {
 
     useEffect(() => {
         checkAuthAndLoad();
-    }, [activeTab]); // deptFilter triggers load via search or effect? Let's trigger via effect or separate Load button.
-    // Ideally trigger on deps change.
+    }, [activeTab]);
 
     useEffect(() => {
         if (!loading) loadComplaints();
@@ -49,17 +48,6 @@ export default function AdminComplaintsPage() {
                 filters.status = activeTab === 'new' ? 'submitted' : activeTab;
             }
             if (search) filters.search = search;
-            // Note: API might not support 'department' filter explicitly in `filters` type in all my previous edits, 
-            // but `getAdminComplaints` implementation in backend (Step 1028: admin.py list_complaints) accepts `department` query param?
-            // Actually checking admin.py: Yes, `department: Optional[str] = None`.
-            // Checking api.ts `AdminComplaintFilters`: It has `status`, `search`, `priority`, `category`. 
-            // It might NOT have `department` in the implementation I did.
-            // Wait, looking at Step 1028 dump of admin.py, it DOES have department.
-            // Step 1046 api.ts view... I need to check if I added `department` to `AdminComplaintFilters` interface.
-            // If not, I should cast or assume it works if I pass it to axios params.
-            // I'll assume standard fitlers. If department isn't there, I'll filter client side for safety or just pass custom obj.
-            // Let's filter client side if backend filtering isn't guaranteed in type, but preferably pass it.
-            // I'll try to pass it in filters object anyway.
             if (deptFilter) (filters as any).department = deptFilter;
 
             const data = await getAdminComplaints(filters);
@@ -76,7 +64,7 @@ export default function AdminComplaintsPage() {
     };
 
     const StatusTabs = () => (
-        <div className="flex border-b border-gray-200 mb-6 overflow-x-auto gap-1">
+        <div className="flex border-b border-gray-200 mb-6 overflow-x-auto gap-4 no-scrollbar">
             {[
                 { id: 'new', label: 'New Requests' },
                 { id: 'assigned', label: 'Assigned' },
@@ -87,9 +75,9 @@ export default function AdminComplaintsPage() {
                 <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-6 py-3 font-bold text-sm whitespace-nowrap transition-all border-b-2 ${activeTab === tab.id
+                    className={`pb-3 font-bold text-sm whitespace-nowrap transition-all border-b-4 ${activeTab === tab.id
                             ? 'border-[#003366] text-[#003366]'
-                            : 'border-transparent text-gray-400 hover:text-gray-700 hover:border-gray-300'
+                            : 'border-transparent text-gray-400 hover:text-gray-700 hover:border-gray-200'
                         }`}
                 >
                     {tab.label}
@@ -111,94 +99,110 @@ export default function AdminComplaintsPage() {
         day: '2-digit', month: 'short', year: 'numeric'
     });
 
-    if (loading && complaints.length === 0) return <div className="p-12 text-center text-gray-500 font-bold">Loading Registry...</div>;
+    if (loading && complaints.length === 0) return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-50">
+            <div className="text-[#003366] font-bold text-lg animate-pulse">Loading Registry...</div>
+        </div>
+    );
 
     const departments = ['Public Works', 'Health', 'Education', 'Transport', 'Municipal', 'Revenue'];
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
+            {/* Main Content */}
             <div className="max-w-7xl mx-auto px-6 py-8">
-                <div className="flex justify-between items-end mb-8 border-b border-gray-200 pb-4">
-                    <div>
-                        <h1 className="text-3xl font-extrabold text-[#003366] tracking-tight">Complaint Management</h1>
-                        <p className="text-gray-500 text-sm mt-1">Central registry of all reported grievances</p>
-                    </div>
-                </div>
+
+                <header className="mb-6 border-b border-gray-200 pb-4">
+                    <h1 className="text-3xl font-extrabold text-[#003366] tracking-tight">Central Complaints Registry</h1>
+                    <p className="text-sm text-gray-500 mt-1 uppercase tracking-wide">Manage and Update Grievance Records</p>
+                </header>
 
                 <AdminNav />
 
-                <div className="bg-white rounded shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-white rounded shadow-sm border border-gray-200 overflow-hidden flex flex-col min-h-[500px]">
                     {/* Toolbar */}
                     <div className="p-6 border-b border-gray-100 bg-gray-50 flex flex-wrap gap-4 justify-between items-center">
                         <form onSubmit={handleSearch} className="flex gap-2 w-full max-w-lg">
                             <input
                                 type="text"
-                                placeholder="Search by ID, Description, or Location..."
-                                className="flex-1 form-input py-2 px-3 border border-gray-300 rounded text-sm focus:outline-none focus:border-blue-500"
+                                placeholder="Ref ID, Keyword, Location..."
+                                className="flex-1 form-input py-2 px-3 border border-gray-300 rounded text-sm focus:outline-none focus:border-[#003366] shadow-sm"
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
                             />
-                            <button type="submit" className="bg-[#003366] text-white px-4 py-2 rounded text-sm font-bold hover:bg-blue-900 transition-colors">Search</button>
+                            <button type="submit" className="bg-[#003366] text-white px-5 py-2 rounded text-sm font-bold hover:bg-blue-900 transition-colors shadow-sm">SEARCH</button>
                         </form>
 
-                        <select
-                            className="form-input py-2 px-3 border border-gray-300 rounded text-sm focus:outline-none focus:border-blue-500 min-w-[200px]"
-                            value={deptFilter}
-                            onChange={(e) => setDeptFilter(e.target.value)}
-                        >
-                            <option value="">Filter by Department (All)</option>
-                            {departments.map(d => <option key={d} value={d}>{d}</option>)}
-                        </select>
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-gray-500 uppercase">Filter:</span>
+                            <select
+                                className="form-select py-2 px-3 border border-gray-300 rounded text-sm focus:outline-none focus:border-[#003366] shadow-sm min-w-[200px]"
+                                value={deptFilter}
+                                onChange={(e) => setDeptFilter(e.target.value)}
+                            >
+                                <option value="">All Departments</option>
+                                {departments.map(d => <option key={d} value={d}>{d}</option>)}
+                            </select>
+                        </div>
                     </div>
 
-                    <div className="px-6 pt-6">
+                    <div className="px-6 pt-6 bg-white">
                         <StatusTabs />
                     </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
-                            <thead className="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-xs">
+                    <div className="flex-1 overflow-x-auto w-full">
+                        <table className="w-full text-left text-sm border-collapse">
+                            <thead className="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 uppercase tracking-wider text-xs sticky top-0 bg-gray-50 z-10">
                                 <tr>
-                                    <th className="p-4 w-32">Reference ID</th>
-                                    <th className="p-4 w-32">Category</th>
-                                    <th className="p-4">Description / Subject</th>
-                                    <th className="p-4 w-24">Priority</th>
-                                    <th className="p-4 w-24">Status</th>
-                                    <th className="p-4 w-24">Date</th>
-                                    <th className="p-4 w-20 text-right">Action</th>
+                                    <th className="p-4 w-32 whitespace-nowrap">Reference ID</th>
+                                    <th className="p-4 w-40 whitespace-nowrap">Category</th>
+                                    <th className="p-4 min-w-[300px]">Description / Subject</th>
+                                    <th className="p-4 w-28 whitespace-nowrap">Priority</th>
+                                    <th className="p-4 w-32 whitespace-nowrap">Status</th>
+                                    <th className="p-4 w-32 whitespace-nowrap">Received Date</th>
+                                    <th className="p-4 w-24 text-right whitespace-nowrap">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {complaints.length === 0 ? (
                                     <tr>
                                         <td colSpan={7} className="p-12 text-center text-gray-500 italic">
-                                            No complaints found matching criteria.
+                                            No complaints found matching current filters.
                                         </td>
                                     </tr>
                                 ) : (
                                     complaints.map(c => (
-                                        <tr key={c.id} className="hover:bg-blue-50 transition-colors">
-                                            <td className="p-4 font-mono text-xs text-gray-500">#{c.id.substring(0, 8).toUpperCase()}</td>
-                                            <td className="p-4 capitalize font-semibold text-gray-700">{c.category.replace('_', ' ')}</td>
-                                            <td className="p-4 max-w-sm">
-                                                <p className="truncate text-gray-800 font-medium">{c.description}</p>
-                                                <p className="text-xs text-gray-400 mt-1">{c.location}</p>
+                                        <tr key={c.id} className="hover:bg-blue-50 transition-colors group">
+                                            <td className="p-4 font-mono text-xs text-gray-500 font-medium">#{c.id.substring(0, 8).toUpperCase()}</td>
+                                            <td className="p-4">
+                                                <span className="font-semibold text-gray-700 capitalize text-xs bg-gray-100 px-2 py-1 rounded inline-block whitespace-nowrap">
+                                                    {c.category.replace('_', ' ')}
+                                                </span>
                                             </td>
                                             <td className="p-4">
-                                                <span className={`inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide ${getPriorityClass(c.priority)}`}>
+                                                <p className="line-clamp-2 text-gray-800 font-medium leading-snug">{c.description}</p>
+                                                <p className="text-xs text-gray-400 mt-1 font-medium">{c.location}</p>
+                                            </td>
+                                            <td className="p-4">
+                                                <span className={`inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide border shadow-sm ${getPriorityClass(c.priority)}`}>
                                                     {c.priority}
                                                 </span>
                                             </td>
                                             <td className="p-4">
-                                                <span className="capitalize text-gray-700 font-medium text-xs bg-gray-100 px-2 py-1 rounded">
+                                                <span className={`capitalize font-bold text-xs flex items-center gap-1 ${c.status === 'resolved' ? 'text-green-700' : 'text-gray-600'
+                                                    }`}>
+                                                    <span className={`w-2 h-2 rounded-full ${c.status === 'resolved' ? 'bg-green-500' :
+                                                            c.status === 'in_progress' ? 'bg-blue-500' :
+                                                                'bg-gray-400'
+                                                        }`}></span>
                                                     {c.status.replace('_', ' ')}
                                                 </span>
                                             </td>
-                                            <td className="p-4 text-gray-500 text-xs font-mono">{formatDate(c.created_at)}</td>
+                                            <td className="p-4 text-gray-500 text-xs font-mono whitespace-nowrap">{formatDate(c.created_at)}</td>
                                             <td className="p-4 text-right">
                                                 <Link
                                                     href={`/admin/complaints/${c.id}`}
-                                                    className="inline-block px-3 py-1.5 border border-gray-300 rounded text-gray-600 hover:text-[#003366] hover:border-[#003366] text-xs font-bold transition-all"
+                                                    className="inline-block px-4 py-1.5 border border-[#003366] rounded text-[#003366] bg-transparent hover:bg-[#003366] hover:text-white text-xs font-bold transition-all shadow-sm uppercase tracking-wide"
                                                 >
                                                     View
                                                 </Link>
@@ -209,9 +213,10 @@ export default function AdminComplaintsPage() {
                             </tbody>
                         </table>
                     </div>
-                    {/* Pagination (Visual only for now if list is long) */}
-                    <div className="p-4 border-t border-gray-100 bg-gray-50 text-xs text-gray-500 text-right">
-                        Showing {complaints.length} records
+                    {/* Footer */}
+                    <div className="p-3 border-t border-gray-200 bg-gray-50 text-xs text-gray-500 font-medium flex justify-between items-center">
+                        <span>System Generated Report</span>
+                        <span>Total Records: {complaints.length}</span>
                     </div>
                 </div>
             </div>
