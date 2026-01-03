@@ -18,20 +18,22 @@ export default function AdminNav() {
     ];
 
     return (
-        <nav className="bg-white rounded-lg shadow mb-8 p-2">
-            <div className="flex flex-wrap justify-center gap-2">
-                {navItems.map(item => (
-                    <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`px-6 py-3 text-sm font-bold uppercase tracking-wide rounded transition-all ${isActive(item.href)
-                                ? 'bg-[#003366] text-white'
-                                : 'text-gray-600 hover:bg-gray-100'
-                            }`}
-                    >
-                        {item.label}
-                    </Link>
-                ))}
+        <nav className="mb-10">
+            <div className="flex justify-center">
+                <div className="inline-flex bg-white rounded-lg shadow-lg overflow-hidden border-2 border-gray-200">
+                    {navItems.map(item => (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={`px-8 py-4 text-base font-bold uppercase tracking-wider transition-all border-r border-gray-200 last:border-r-0 ${isActive(item.href)
+                                    ? 'bg-[#003366] text-white'
+                                    : 'text-gray-700 hover:bg-gray-100'
+                                }`}
+                        >
+                            {item.label}
+                        </Link>
+                    ))}
+                </div>
             </div>
         </nav>
     );
