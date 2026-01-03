@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface Message {
     type: 'bot' | 'user';
@@ -37,11 +38,15 @@ function getResponse(input: string): string {
 }
 
 export default function Chatbot() {
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
         { type: 'bot', text: 'Hello! I\'m your Civic Sense Assistant. How can I help you today?' }
     ]);
     const [input, setInput] = useState('');
+
+    // Hide on Admin pages
+    if (pathname?.startsWith('/admin')) return null;
 
     const handleSend = () => {
         if (!input.trim()) return;
