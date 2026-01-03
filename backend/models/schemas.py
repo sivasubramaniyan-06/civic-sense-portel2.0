@@ -43,6 +43,7 @@ class GrievanceSubmission(BaseModel):
     lng: Optional[float] = None
     audio_path: Optional[str] = None  # Direct path if uploaded via media API
     audio_meta: Optional[dict] = None
+    audio_language: Optional[str] = None
 
 
 class ClassificationResult(BaseModel):
@@ -90,6 +91,7 @@ class Grievance(BaseModel):
     lat: Optional[float] = None
     lng: Optional[float] = None
     audio_meta: Optional[dict] = None  # {size, duration, original_name}
+    audio_language: Optional[str] = None
     user_id: Optional[str] = None  # Link to authenticated user
     status: Status = Status.SUBMITTED
     priority: Priority = Priority.MEDIUM

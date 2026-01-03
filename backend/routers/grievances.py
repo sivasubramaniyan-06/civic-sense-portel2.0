@@ -156,6 +156,7 @@ async def submit_grievance(submission: GrievanceSubmission, authorization: Optio
         lat=submission.lat,
         lng=submission.lng,
         audio_meta=submission.audio_meta,
+        audio_language=submission.audio_language,
         user_id=user_id,  # Link to authenticated user
         status=Status.SUBMITTED,
         priority=classification.priority,

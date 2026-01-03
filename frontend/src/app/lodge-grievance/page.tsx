@@ -43,6 +43,7 @@ export default function LodgeGrievance() {
     const [audioPath, setAudioPath] = useState('');
     const [audioMeta, setAudioMeta] = useState<any>(null);
     const [audioName, setAudioName] = useState('');
+    const [audioLanguage, setAudioLanguage] = useState('');
     const [isRecording, setIsRecording] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
     const [lat, setLat] = useState<number | undefined>(undefined);
@@ -180,6 +181,7 @@ export default function LodgeGrievance() {
         setAudioPath('');
         setAudioMeta(null);
         setAudioName('');
+        setAudioLanguage('');
     };
 
     const handleStep2Submit = async () => {
@@ -191,9 +193,13 @@ export default function LodgeGrievance() {
             setError('Please select a location.');
             return;
         }
+        if (audioName && !audioLanguage) {
+            setError('Please select the language of your voice note.');
+            return;
+        }
 
-        setLoading(true);
         setError('');
+        setLoading(true);
 
         try {
             // Run AI classification
@@ -226,6 +232,7 @@ export default function LodgeGrievance() {
                 audio_base64: audioBase64 || undefined,
                 audio_path: audioPath || undefined,
                 audio_meta: audioMeta || undefined,
+                audio_language: audioLanguage || undefined,
                 lat: lat || undefined,
                 lng: lng || undefined,
                 submitter_name: submitterName || undefined,
@@ -425,6 +432,30 @@ export default function LodgeGrievance() {
                                     )}
                                 </div>
                             )}
+
+                            {/* Language Selection */}
+                            {audioName && (
+                                <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                    <label className="block text-sm font-bold text-[#003366] mb-2">
+                                        Select Voice Note Language *
+                                    </label>
+                                    <select
+                                        className="form-select w-full"
+                                        value={audioLanguage}
+                                        onChange={(e) => setAudioLanguage(e.target.value)}
+                                    >
+                                        <option value="">-- Select Language --</option>
+                                        <option value="Tamil">Tamil</option>
+                                        <option value="English">English</option>
+                                        <option value="Hindi">Hindi</option>
+                                        <option value="Telugu">Telugu</option>
+                                        <option value="Malayalam">Malayalam</option>
+                                        <option value="Kannada">Kannada</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            )}
+
                             <p className="text-xs text-gray-500 mt-1">Supported formats: MP3, WAV, M4A</p>
                         </div>
 

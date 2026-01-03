@@ -211,17 +211,25 @@ export default function ComplaintDetailPage() {
                 )}
 
                 {/* Audio Evidence */}
-                {complaint.audio_path && (
-                    <div className="gov-card mb-6">
-                        <h2 className="text-lg font-bold text-[#003366] mb-4">🎤 Voice Note</h2>
+                {/* Audio Evidence */}
+                <div className="gov-card mb-6">
+                    <h2 className="text-lg font-bold text-[#003366] mb-4">🎤 Voice Note</h2>
+                    {complaint.audio_path ? (
                         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            {complaint.audio_language && (
+                                <p className="text-sm font-bold text-[#003366] mb-2">
+                                    Voice Language: <span className="text-gray-700 font-normal">{complaint.audio_language}</span>
+                                </p>
+                            )}
                             <audio controls className="w-full">
                                 <source src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/uploads/${complaint.audio_path}`} />
                                 Your browser does not support the audio element.
                             </audio>
                         </div>
-                    </div>
-                )}
+                    ) : (
+                        <p className="text-gray-500 italic text-sm">No voice note attached</p>
+                    )}
+                </div>
 
                 {/* Location Map */}
                 {(complaint.lat || (complaint as any).lat) && (

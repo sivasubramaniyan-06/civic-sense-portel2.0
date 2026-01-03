@@ -512,6 +512,11 @@ export default function AdminDashboardPage() {
                                 {selectedComplaint.audio_path && (
                                     <div className="mb-4">
                                         <label className="text-sm font-bold block mb-1">Voice Note</label>
+                                        {selectedComplaint.audio_language && (
+                                            <p className="text-xs text-[#003366] mb-1 font-bold">
+                                                Language: <span className="text-gray-600 font-normal">{selectedComplaint.audio_language}</span>
+                                            </p>
+                                        )}
                                         <audio controls className="w-full h-8">
                                             <source src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/uploads/${selectedComplaint.audio_path}`} />
                                         </audio>

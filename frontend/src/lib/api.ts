@@ -38,6 +38,7 @@ export interface Grievance {
   audio_meta: { size: number; duration?: number; original_name: string } | null;
   lat?: number;
   lng?: number;
+  audio_language?: string;
   submitter_name: string;
   submitter_phone: string | null;
   submitter_email: string | null;
@@ -64,6 +65,7 @@ export interface GrievanceSubmission {
   audio_meta?: any;
   lat?: number;
   lng?: number;
+  audio_language?: string;
   submitter_name?: string;
   submitter_phone?: string;
   submitter_email?: string;
