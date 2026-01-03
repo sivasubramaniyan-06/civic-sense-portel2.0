@@ -11,23 +11,23 @@ export default function AdminNav() {
     };
 
     const navItems = [
-        { href: '/admin/dashboard', label: 'Dashboard' },
-        { href: '/admin/complaints', label: 'Manage Complaints' },
-        { href: '/admin/priority', label: 'Priority Session' },
-        { href: '/admin/analytics', label: 'Analytics' },
+        { href: '/admin/dashboard', label: 'DASHBOARD' },
+        { href: '/admin/complaints', label: 'MANAGE COMPLAINTS' },
+        { href: '/admin/priority', label: 'PRIORITY SESSION' },
+        { href: '/admin/analytics', label: 'ANALYTICS' },
     ];
 
     return (
-        <nav className="mb-10">
-            <div className="flex justify-center">
-                <div className="inline-flex bg-white rounded-lg shadow-lg overflow-hidden border-2 border-gray-200">
+        <nav className="w-full bg-white border-b-4 border-[#003366] mb-12">
+            <div className="max-w-[1280px] mx-auto">
+                <div className="flex">
                     {navItems.map(item => (
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={`px-8 py-4 text-base font-bold uppercase tracking-wider transition-all border-r border-gray-200 last:border-r-0 ${isActive(item.href)
+                            className={`flex-1 text-center px-6 py-5 text-base font-bold tracking-wider transition-all border-r border-gray-200 last:border-r-0 ${isActive(item.href)
                                     ? 'bg-[#003366] text-white'
-                                    : 'text-gray-700 hover:bg-gray-100'
+                                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                                 }`}
                         >
                             {item.label}
