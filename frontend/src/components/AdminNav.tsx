@@ -6,24 +6,24 @@ import { usePathname } from 'next/navigation';
 export default function AdminNav() {
     const pathname = usePathname();
 
+    // Check active path including subroutes
     const isActive = (path: string) => {
-        // Simple exact match or sub-path match
         return pathname === path || pathname?.startsWith(path + '/')
-            ? 'bg-[#003366] text-white'
-            : 'text-[#003366] hover:bg-gray-100';
+            ? 'bg-[#003366] text-white shadow-md'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-[#003366]';
     };
 
     return (
-        <nav className="bg-white shadow-sm mb-6 rounded-lg overflow-hidden border border-gray-200">
-            <div className="flex flex-wrap">
-                <Link href="/admin/dashboard" className={`px-6 py-3 font-medium transition-colors ${isActive('/admin/dashboard')}`}>
-                    📊 Insights
+        <nav className="bg-white shadow-sm mb-8 rounded-lg border border-gray-200 p-1">
+            <div className="flex flex-wrap gap-1">
+                <Link href="/admin/dashboard" className={`flex-1 min-w-[150px] text-center px-4 py-3 text-sm font-bold rounded-md transition-all ${isActive('/admin/dashboard')}`}>
+                    Insights & Overview
                 </Link>
-                <Link href="/admin/complaints" className={`px-6 py-3 font-medium transition-colors ${isActive('/admin/complaints')}`}>
-                    📋 All Complaints
+                <Link href="/admin/complaints" className={`flex-1 min-w-[150px] text-center px-4 py-3 text-sm font-bold rounded-md transition-all ${isActive('/admin/complaints')}`}>
+                    All Complaints
                 </Link>
-                <Link href="/admin/priority" className={`px-6 py-3 font-medium transition-colors ${isActive('/admin/priority')}`}>
-                    🚨 Priority Session
+                <Link href="/admin/priority" className={`flex-1 min-w-[150px] text-center px-4 py-3 text-sm font-bold rounded-md transition-all ${isActive('/admin/priority')}`}>
+                    Priority Session
                 </Link>
             </div>
         </nav>
