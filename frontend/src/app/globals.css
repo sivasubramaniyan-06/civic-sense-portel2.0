@@ -124,9 +124,15 @@ body {
 }
 
 .gov-container {
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .gov-container {
+    padding: 0 2rem;
+  }
 }
 
 .gov-header-content {
@@ -282,6 +288,9 @@ div[class*="min-h-screen"][class*="bg-gray"]>div>div[class*="max-w-"] {
   background-color: #f5f7fa;
   width: 100%;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Center child container */
@@ -290,9 +299,16 @@ div[class*="min-h-screen"][class*="bg-gray"]>div>div[class*="max-w-"] {
   max-width: 1200px;
   margin-left: auto !important;
   margin-right: auto !important;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
   box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .page-content>div {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
 /* Flex page-content (for login/register centered pages) */
@@ -301,8 +317,33 @@ div[class*="min-h-screen"][class*="bg-gray"]>div>div[class*="max-w-"] {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .page-content.flex {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Reusable centered container for user pages */
+.user-page-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .user-page-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
 /* ===== HERO SLIDER ===== */
@@ -2293,4 +2334,133 @@ div[class*="min-h-screen"][class*="bg-gray"]>div>div[class*="max-w-"] {
     padding: 0.5rem;
     font-size: 0.75rem;
   }
+}
+
+/* ===== BUTTON COMPONENTS ===== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--gov-blue);
+  color: white;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--gov-blue-light);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background-color: transparent;
+  color: var(--gov-blue);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: 2px solid var(--gov-blue);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-outline:hover {
+  background-color: var(--gov-blue);
+  color: white;
+}
+
+.btn-success {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background-color: #10b981;
+  color: white;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-success:hover {
+  background-color: #059669;
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background-color: #dc2626;
+  color: white;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+/* ===== GOV CARD ===== */
+.gov-card {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+/* ===== FORM INPUT ===== */
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--gov-blue);
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+}
+
+/* ===== ALERT COMPONENTS ===== */
+.alert {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.alert-error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+.alert-success {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
 }

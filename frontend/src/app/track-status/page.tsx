@@ -62,7 +62,7 @@ export default function TrackStatus() {
             {/* Header offset */}
             <div className="h-32 w-full"></div>
 
-            <div className="w-full max-w-[900px] mx-auto px-8 pb-16">
+            <div className="w-full max-w-[1200px] mx-auto px-6 md:px-8 pb-16">
                 <header className="text-center mb-10">
                     <h1 className="text-3xl font-bold text-[#003366] mb-3">
                         Track Your Grievance

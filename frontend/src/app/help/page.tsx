@@ -24,7 +24,7 @@ export default function Help() {
             {/* Header offset */}
             <div className="h-32 w-full"></div>
 
-            <div className="w-full max-w-[1000px] mx-auto px-8 pb-16">
+            <div className="w-full max-w-[1200px] mx-auto px-6 md:px-8 pb-16">
                 <header className="text-center mb-12">
                     <h1 className="text-3xl font-bold text-[#003366] mb-3">Help & FAQ</h1>
                     <p className="text-lg text-gray-600">Find answers to common questions and get support</p>

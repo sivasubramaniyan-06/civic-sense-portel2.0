@@ -4,7 +4,7 @@ export default function Footer() {
     return (
         <footer className="bg-[#1a1a2e] text-gray-300">
             {/* Main Footer Content */}
-            <div className="max-w-[1280px] mx-auto px-6 md:px-8 py-12 md:py-16">
+            <div className="max-w-[1200px] mx-auto px-6 md:px-8 py-12 md:py-16">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
                     {/* About Section */}
                     <div>
@@ -87,9 +87,8 @@ export default function Footer() {
                 </div>
             </div>
 
-            {/* Bottom Bar */}
             <div className="border-t border-gray-700 bg-[#0f0f1a]">
-                <div className="max-w-[1280px] mx-auto px-6 md:px-8 py-5">
+                <div className="max-w-[1200px] mx-auto px-6 md:px-8 py-5">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
                         <p>© 2026 Civic Sense Portal. All Rights Reserved.</p>
                         <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4">

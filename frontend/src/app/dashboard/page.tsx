@@ -58,6 +58,22 @@ export default function DashboardPage() {
         checkAuth();
     }, [router]);
 
+    // Refetch complaints when page becomes visible (user returns from submission)
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && user) {
+                fetchComplaints();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('focus', () => user && fetchComplaints());
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [user]);
+
     const fetchComplaints = async () => {
         setComplaintsLoading(true);
         try {
@@ -120,7 +136,7 @@ export default function DashboardPage() {
 
     return (
         <div className="page-content">
-            <div className="w-full max-w-5xl mx-auto px-4">
+            <div className="w-full max-w-[1200px] mx-auto px-6 md:px-8">
                 {/* Welcome Section */}
                 <div className="gov-card mb-6">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -168,7 +184,18 @@ export default function DashboardPage() {
                 <div className="gov-card">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-lg font-bold text-[#003366]">📋 My Complaints</h2>
-                        <span className="text-sm text-gray-500">Total: {complaints.length}</span>
+                        <div className="flex items-center gap-3">
+                            <span className="text-sm text-gray-500">Total: {complaints.length}</span>
+                            <button
+                                onClick={fetchComplaints}
+                                disabled={complaintsLoading}
+                                className="text-sm text-[#003366] hover:text-blue-800 flex items-center gap-1 disabled:opacity-50"
+                                title="Refresh complaints"
+                            >
+                                <span className={complaintsLoading ? 'animate-spin' : ''}>🔄</span>
+                                Refresh
+                            </button>
+                        </div>
                     </div>
 
                     {complaintsLoading ? (
