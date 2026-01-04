@@ -17,16 +17,16 @@ app = FastAPI(
 )
 
 # CORS middleware for frontend communication
-# Allow localhost for development and all Vercel/production origins
-allowed_origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+# Read from environment variable, default to "*" for compatibility
+frontend_url = os.environ.get("FRONTEND_URL", "*")
+allowed_origins = [frontend_url] if frontend_url != "*" else ["*"]
 
-# Add environment-based origins for production
-frontend_url = os.environ.get("FRONTEND_URL")
-if frontend_url:
-    allowed_origins.append(frontend_url)
+# Add localhost for development
+if frontend_url != "*":
+    allowed_origins.extend([
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ])
 
 app.add_middleware(
     CORSMiddleware,
