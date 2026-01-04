@@ -207,6 +207,21 @@ body {
 /* Add body padding for fixed header */
 .landing-page {
   padding-top: var(--header-height);
+  width: 100%;
+}
+
+/* ===== LANDING PAGE SECTION CENTERING ===== */
+/* Ensures all landing page sections are properly centered on desktop */
+.landing-page section {
+  width: 100%;
+}
+
+/* Global centered container for landing page content */
+.landing-page section>div[class*="max-w-"] {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Page content padding for internal pages */

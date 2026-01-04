@@ -62,36 +62,38 @@ export default function Home() {
     <div className="landing-page">
 
       {/* ========== SECTION 1: HERO SLIDER ========== */}
-      <section className="relative bg-gradient-to-br from-[#003366] via-[#004488] to-[#002244] overflow-hidden">
+      <section className="relative overflow-hidden">
         {/* Header offset */}
-        <div className="h-28"></div>
+        <div className="h-20"></div>
 
         {/* Slider Container */}
-        <div className="relative min-h-[450px] lg:min-h-[500px]">
+        <div className="relative w-full" style={{ aspectRatio: '3/1', minHeight: '280px', maxHeight: '450px' }}>
           {slides.map((slide, index) => (
             <div
               key={index}
-              className={`absolute inset-0 transition-all duration-700 ease-in-out flex items-center ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              className={`absolute inset-0 transition-all duration-700 ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
                 }`}
             >
-              <div className="w-full max-w-[1200px] mx-auto px-8">
-                <div className="text-center text-white">
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                    {slide.title}
-                  </h1>
-                  <p className="text-xl md:text-2xl text-blue-200 mb-10 max-w-3xl mx-auto leading-relaxed">
-                    {slide.subtitle}
-                  </p>
-                  <div className="flex flex-wrap gap-6 justify-center">
+              {/* Full-width Banner Image */}
+              <img
+                src={slide.image}
+                alt={slide.title}
+                className="w-full h-full object-cover object-center"
+              />
+
+              {/* Action Buttons Overlay at bottom */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent py-6">
+                <div className="max-w-[1200px] mx-auto px-8">
+                  <div className="flex flex-wrap gap-4 justify-center">
                     <Link
                       href="/lodge-grievance"
-                      className="bg-yellow-500 hover:bg-yellow-400 text-[#003366] font-bold py-4 px-10 rounded-lg text-lg transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+                      className="bg-yellow-500 hover:bg-yellow-400 text-[#003366] font-bold py-3 px-8 rounded-lg text-base md:text-lg transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
                     >
                       Lodge Grievance
                     </Link>
                     <Link
                       href="/track-status"
-                      className="bg-transparent border-2 border-white hover:bg-white hover:text-[#003366] text-white font-bold py-4 px-10 rounded-lg text-lg transition-all hover:-translate-y-1"
+                      className="bg-white/90 hover:bg-white text-[#003366] font-bold py-3 px-8 rounded-lg text-base md:text-lg transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
                     >
                       Track Status
                     </Link>
@@ -104,24 +106,24 @@ export default function Home() {
           {/* Navigation Arrows */}
           <button
             onClick={prevSlide}
-            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center text-3xl transition-all"
+            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center text-3xl transition-all backdrop-blur-sm"
           >
             ‹
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center text-3xl transition-all"
+            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center text-3xl transition-all backdrop-blur-sm"
           >
             ›
           </button>
 
           {/* Dots Navigation */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-3">
             {slides.map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`h-3 rounded-full transition-all ${index === currentSlide ? 'bg-yellow-500 w-10' : 'bg-white/40 w-3 hover:bg-white/60'
+                className={`h-3 rounded-full transition-all shadow-md ${index === currentSlide ? 'bg-yellow-500 w-10' : 'bg-white/60 w-3 hover:bg-white/80'
                   }`}
               />
             ))}
