@@ -58,11 +58,11 @@ export default function TrackStatus() {
     const currentStepIndex = grievance ? statusSteps.indexOf(grievance.status) : -1;
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center">
             {/* Header offset */}
-            <div className="h-32"></div>
+            <div className="h-32 w-full"></div>
 
-            <div className="max-w-[900px] mx-auto px-8 pb-16">
+            <div className="w-full max-w-[900px] mx-auto px-8 pb-16">
                 <header className="text-center mb-10">
                     <h1 className="text-3xl font-bold text-[#003366] mb-3">
                         Track Your Grievance

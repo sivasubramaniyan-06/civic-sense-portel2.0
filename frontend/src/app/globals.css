@@ -41,6 +41,23 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Animation for department tooltips */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
 html,
 body {
   max-width: 100vw;
@@ -222,6 +239,39 @@ body {
   margin-right: auto;
   width: 100%;
   box-sizing: border-box;
+}
+
+/* ===== USER PAGES CENTERING (lodge-grievance, track-status, help, etc.) ===== */
+/* Ensures all user-facing pages have centered content on desktop */
+
+/* Global rule: Any page with min-h-screen that contains a max-w container */
+div[class*="min-h-screen"]>div[class*="max-w-"] {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Specific fix for pages using h-32 offset + max-w containers */
+div[class*="min-h-screen"]>.h-32+div[class*="max-w-"] {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Ensure body-level centering for standalone pages */
+body>div>div[class*="min-h-screen"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Fix: Content containers within min-h-screen pages */
+div[class*="min-h-screen"][class*="bg-gray"]>div[class*="max-w-"],
+div[class*="min-h-screen"][class*="bg-gray"]>div>div[class*="max-w-"] {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: 100%;
 }
 
 /* Page content padding for internal pages */

@@ -133,7 +133,7 @@ export default function LodgeGrievance() {
 
         try {
             await submitGrievance({
-                category: "Other", // Will be auto-classified
+                category: "others", // Will be auto-classified by AI
                 description: finalDesc,
                 location,
                 image_base64: imageBase64 || undefined,
@@ -164,11 +164,11 @@ export default function LodgeGrievance() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
+        <div className="min-h-screen bg-gray-50 font-sans text-gray-800 flex flex-col items-center">
             {/* Header offset */}
-            <div className="h-32"></div>
+            <div className="h-32 w-full"></div>
 
-            <div className="max-w-[800px] mx-auto px-8 pb-16">
+            <div className="w-full max-w-[800px] mx-auto px-8 pb-16">
                 <header className="mb-10 text-center">
                     <h1 className="text-3xl font-bold text-[#003366] mb-3">Lodge Public Grievance</h1>
                     <p className="text-lg text-gray-600">Step-by-step submission process</p>

@@ -49,9 +49,9 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center px-8">
-            {/* Header offset handled by flex centering */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 w-full max-w-md p-10 mt-20">
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center px-8 pt-36 pb-12">
+            {/* Card container - removed mt-20, using pt-36 on parent for fixed header offset */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 w-full max-w-md p-10">
                 <div className="text-center mb-8">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-600 flex items-center justify-center">
                         <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
