@@ -1,0 +1,98 @@
+{
+  "CSP-20260103-A41D62": {
+    "auto_category": "road",
+    "suggested_department": "Public Works Department (PWD)",
+    "confidence_score": 30.0,
+    "auto_status": "pending_approval",
+    "analyzed_at": "2026-01-05T17:40:13.894299",
+    "keywords_matched": [
+      "issue"
+    ]
+  },
+  "CSP-20260103-6D3419": {
+    "auto_category": "sanitation",
+    "suggested_department": "Municipal Corporation - Sanitation",
+    "confidence_score": 70.0,
+    "auto_status": "pending_approval",
+    "analyzed_at": "2026-01-05T17:40:13.898864",
+    "keywords_matched": [
+      "issue",
+      "cleaning",
+      "trash"
+    ]
+  },
+  "CSP-20260103-4E1E89": {
+    "auto_category": "health_safety",
+    "suggested_department": "Health & Safety Department",
+    "confidence_score": 30.0,
+    "auto_status": "pending_approval",
+    "analyzed_at": "2026-01-05T17:40:13.900141",
+    "keywords_matched": [
+      "weeks",
+      "issue"
+    ]
+  },
+  "CSP-20260103-45AA73": {
+    "auto_category": "road",
+    "suggested_department": "Public Works Department (PWD)",
+    "confidence_score": 30.0,
+    "auto_status": "pending_approval",
+    "analyzed_at": "2026-01-05T17:40:13.901378",
+    "keywords_matched": [
+      "issue"
+    ]
+  },
+  "CSP-20260103-7043A8": {
+    "auto_category": "electricity",
+    "suggested_department": "Electricity Board",
+    "confidence_score": 30.0,
+    "auto_status": "pending_approval",
+    "analyzed_at": "2026-01-05T17:40:13.902401",
+    "keywords_matched": [
+      "issue"
+    ]
+  },
+  "CSP-20260104-542F74": {
+    "auto_category": "road",
+    "suggested_department": "Transport Department",
+    "confidence_score": 90.0,
+    "auto_status": "pending_approval",
+    "analyzed_at": "2026-01-05T17:40:13.903678",
+    "keywords_matched": [
+      "pothole",
+      "street",
+      "hazard"
+    ]
+  },
+  "CSP-20260105-DEEB86": {
+    "auto_category": "road",
+    "suggested_department": "Health & Safety Department",
+    "confidence_score": 100.0,
+    "auto_status": "pending_approval",
+    "analyzed_at": "2026-01-05T17:40:13.905329",
+    "keywords_matched": [
+      "child",
+      "danger",
+      "safety",
+      "elderly",
+      "hazard"
+    ]
+  },
+  "CSP-20260105-73E573": {
+    "auto_category": "water",
+    "suggested_department": "Water Supply & Sewerage Board",
+    "confidence_score": 100.0,
+    "auto_status": "pending_approval",
+    "analyzed_at": "2026-01-05T17:40:13.906732",
+    "keywords_matched": [
+      "severe",
+      "no water",
+      "child",
+      "tank",
+      "elderly",
+      "urgent",
+      "supply",
+      "water"
+    ]
+  }
+}

@@ -19,9 +19,12 @@ from models.schemas import (
     GrievanceCategory
 )
 from storage.data_store import data_store
+from storage.auto_assignment_store import auto_assignment_store
 from services.ai_classifier import classify_grievance
 from services.duplicate_checker import check_duplicates
 from services.auth_utils import get_user_from_token
+from services.auto_categorizer import analyze_grievance_for_auto_assignment
+from models.auto_assignment_schemas import AutoAssignmentData, AutoAssignmentStatus
 
 router = APIRouter(prefix="/api/grievances", tags=["Grievances"])
 
@@ -179,6 +182,26 @@ async def submit_grievance(submission: GrievanceSubmission, authorization: Optio
     
     # Store grievance
     data_store.create_grievance(grievance)
+    
+    # Perform auto-categorization for admin review
+    try:
+        auto_category, suggested_dept, confidence = analyze_grievance_for_auto_assignment(
+            submission.description,
+            classification.detected_category
+        )
+        
+        auto_data = AutoAssignmentData(
+            auto_category=auto_category,
+            suggested_department=suggested_dept,
+            confidence_score=confidence,
+            auto_status=AutoAssignmentStatus.PENDING_APPROVAL,
+            analyzed_at=now,
+            keywords_matched=classification.keywords_found
+        )
+        auto_assignment_store.create_auto_assignment(complaint_id, auto_data)
+    except Exception as e:
+        # Don't fail submission if auto-categorization fails
+        print(f"Auto-categorization warning: {e}")
     
     return GrievanceResponse(
         success=True,

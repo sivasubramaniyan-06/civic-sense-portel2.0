@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
 
-from routers import grievances, admin, auth, user, media, admin_analytics
+from routers import grievances, admin, auth, user, media, admin_analytics, auto_assignment
 
 # Create FastAPI app
 app = FastAPI(
@@ -44,6 +44,7 @@ app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(media.router)
 app.include_router(admin_analytics.router)
+app.include_router(auto_assignment.router)
 
 # Create uploads directory if not exists
 os.makedirs("uploads/audio", exist_ok=True)

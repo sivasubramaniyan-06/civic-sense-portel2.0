@@ -13,6 +13,7 @@ export default function AdminNav() {
     const navItems = [
         { href: '/admin/dashboard', label: 'DASHBOARD' },
         { href: '/admin/complaints', label: 'COMPLAINTS' },
+        { href: '/admin/auto-assignment', label: 'AUTO ASSIGN' },
         { href: '/admin/priority', label: 'PRIORITY' },
         { href: '/admin/analytics', label: 'ANALYTICS' },
         { href: '/admin/team', label: 'TEAM' },
@@ -28,8 +29,8 @@ export default function AdminNav() {
                             key={item.href}
                             href={item.href}
                             className={`flex-1 text-center px-4 py-4 text-sm font-bold tracking-wider transition-all border-r border-gray-200 last:border-r-0 ${isActive(item.href)
-                                    ? 'bg-[#003366] text-white'
-                                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                                ? 'bg-[#003366] text-white'
+                                : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                                 }`}
                         >
                             {item.label}

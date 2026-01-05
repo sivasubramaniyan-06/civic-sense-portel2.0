@@ -30,5 +30,13 @@
     "name": "New User",
     "role": "user",
     "created_at": "2026-01-03T21:28:31.673887"
+  },
+  "sec24cs028@sairamtap.edu.in": {
+    "id": "USR20260105134535004",
+    "email": "sec24cs028@sairamtap.edu.in",
+    "password": "$2b$12$evNAgGv793qqwIh5PvbboOrN4wQcByjlIoLC.nGTxHPk6LSt6.OjC",
+    "name": "Athishwar K",
+    "role": "user",
+    "created_at": "2026-01-05T13:45:35.252584"
   }
 }

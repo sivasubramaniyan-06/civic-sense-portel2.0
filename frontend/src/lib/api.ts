@@ -499,3 +499,196 @@ export async function downloadAdminExport(): Promise<void> {
   document.body.removeChild(a);
 }
 
+// ===== AUTO ASSIGNMENT APIs =====
+
+export interface AutoAssignmentQueueItem {
+  complaint_id: string;
+  complaint_summary: string;
+  location: string;
+  nlp_category: string;
+  suggested_department: string;
+  confidence_score: number;
+  days_since_submission: number;
+  current_status: string;
+  priority: string;
+  created_at: string;
+  keywords_found: string[];
+}
+
+export interface AutoAssignmentQueueResponse {
+  success: boolean;
+  items: AutoAssignmentQueueItem[];
+  total: number;
+  pending_count: number;
+  approved_count: number;
+  rejected_count: number;
+}
+
+export interface AutoAssignmentStats {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+  review_required: number;
+  average_confidence: number;
+}
+
+export interface AutoAssignmentConfig {
+  review_window_days: number;
+  auto_assign_threshold: number;
+  enabled: boolean;
+}
+
+export interface AutoAssignmentFilters {
+  days?: number;
+  status?: string;
+  min_confidence?: number;
+  max_confidence?: number;
+  department?: string;
+}
+
+export async function getAutoAssignmentQueue(filters?: AutoAssignmentFilters): Promise<AutoAssignmentQueueResponse> {
+  const token = getStoredToken();
+  const params = new URLSearchParams();
+
+  if (filters?.days) params.append('days', filters.days.toString());
+  if (filters?.status) params.append('status', filters.status);
+  if (filters?.min_confidence) params.append('min_confidence', filters.min_confidence.toString());
+  if (filters?.max_confidence) params.append('max_confidence', filters.max_confidence.toString());
+  if (filters?.department) params.append('department', filters.department);
+
+  const url = `${API_BASE_URL}/api/admin/auto-assignment/queue${params.toString() ? '?' + params.toString() : ''}`;
+  const response = await fetch(url, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch auto-assignment queue');
+  return response.json();
+}
+
+export async function getAutoAssignmentStats(): Promise<AutoAssignmentStats> {
+  const token = getStoredToken();
+  const response = await fetch(`${API_BASE_URL}/api/admin/auto-assignment/stats`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch auto-assignment stats');
+  return response.json();
+}
+
+export async function getAutoAssignmentDepartments(): Promise<{ departments: string[] }> {
+  const token = getStoredToken();
+  const response = await fetch(`${API_BASE_URL}/api/admin/auto-assignment/departments`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch departments');
+  return response.json();
+}
+
+export async function getAutoAssignmentConfig(): Promise<AutoAssignmentConfig> {
+  const token = getStoredToken();
+  const response = await fetch(`${API_BASE_URL}/api/admin/auto-assignment/config`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch config');
+  return response.json();
+}
+
+export async function updateAutoAssignmentConfig(config: AutoAssignmentConfig): Promise<AutoAssignmentConfig> {
+  const token = getStoredToken();
+  const response = await fetch(`${API_BASE_URL}/api/admin/auto-assignment/config`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(config)
+  });
+
+  if (!response.ok) throw new Error('Failed to update config');
+  return response.json();
+}
+
+export async function approveAutoAssignment(
+  complaintId: string,
+  department: string,
+  remarks?: string
+): Promise<{ success: boolean; message: string; complaint: Grievance }> {
+  const token = getStoredToken();
+  const response = await fetch(`${API_BASE_URL}/api/admin/auto-assignment/${complaintId}/approve`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ department, remarks })
+  });
+
+  if (!response.ok) throw new Error('Failed to approve assignment');
+  return response.json();
+}
+
+export async function rejectAutoAssignment(
+  complaintId: string,
+  reason?: string
+): Promise<{ success: boolean; message: string }> {
+  const token = getStoredToken();
+  const response = await fetch(`${API_BASE_URL}/api/admin/auto-assignment/${complaintId}/reject`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ reason })
+  });
+
+  if (!response.ok) throw new Error('Failed to reject assignment');
+  return response.json();
+}
+
+export async function bulkAutoAssignment(
+  complaintIds: string[],
+  action: 'approve' | 'reject',
+  department?: string,
+  remarks?: string
+): Promise<{ success: boolean; message: string; results: { success_count: number; failed_count: number; failures: Array<{ complaint_id: string; error: string }> } }> {
+  const token = getStoredToken();
+  const response = await fetch(`${API_BASE_URL}/api/admin/auto-assignment/bulk`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ complaint_ids: complaintIds, action, department, remarks })
+  });
+
+  if (!response.ok) throw new Error('Failed to perform bulk operation');
+  return response.json();
+}
+
+export async function getAutoAssignmentAuditLogs(complaintId?: string, limit: number = 100): Promise<{ success: boolean; logs: Array<any>; total: number }> {
+  const token = getStoredToken();
+  const params = new URLSearchParams();
+  if (complaintId) params.append('complaint_id', complaintId);
+  params.append('limit', limit.toString());
+
+  const response = await fetch(`${API_BASE_URL}/api/admin/auto-assignment/audit-logs?${params.toString()}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch audit logs');
+  return response.json();
+}
+
+export async function syncAutoAssignmentQueue(): Promise<{ success: boolean; message: string; synced_count: number }> {
+  const token = getStoredToken();
+  const response = await fetch(`${API_BASE_URL}/api/admin/auto-assignment/sync`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (!response.ok) throw new Error('Failed to sync queue');
+  return response.json();
+}
